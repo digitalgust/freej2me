@@ -1,3 +1,12 @@
+
+This is a fork of freej2me.    
+Improvement:    
+* Support network.
+* Support java.microedition.lcdui.TextField and java.microedition.lcdui.TextBox for input .
+* Support full of com.nokia.mid.ui.DirectGraphics.drawImage maniputation.
+* Fix java.microedition.lcdui package bugs.
+
+
 # freej2me
 
 ![Java CI](https://github.com/hex007/freej2me/workflows/Java%20CI/badge.svg)
