@@ -63,9 +63,9 @@ public class Form extends Screen
 
 	public Item get(int itemNum) { return items.get(itemNum); }
 
-	public int getHeight() { return 128; }
+	public int getHeight() { return Mobile.getPlatform().lcdHeight; }
 
-	public int getWidth() { return 64; }
+	public int getWidth() { return Mobile.getPlatform().lcdWidth; }
 
 	public void insert(int itemNum, Item item) { items.add(itemNum, item); render(); }
 
@@ -80,6 +80,31 @@ public class Form extends Screen
 	*/
 
 	public void keyPressed(int key)
+	{
+//		if(listCommands==true)
+//		{
+//			keyPressedCommands(key);
+//			return;
+//		}
+//
+//		if(items.size()<1) { return; }
+//		switch(key)
+//		{
+//			case Mobile.KEY_NUM2: currentItem--; break;
+//			case Mobile.KEY_NUM8: currentItem++; break;
+//			case Mobile.NOKIA_UP: currentItem--; break;
+//			case Mobile.NOKIA_DOWN: currentItem++; break;
+//			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
+//			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
+//			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
+//			case Mobile.KEY_NUM5: doDefaultCommand(); break;
+//		}
+//		if (currentItem>=items.size()) { currentItem=0; }
+//		if (currentItem<0) { currentItem = items.size()-1; }
+//		render();
+	}
+
+	public void keyReleased(int key)
 	{
 		if(listCommands==true)
 		{

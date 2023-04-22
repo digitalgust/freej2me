@@ -16,8 +16,9 @@
 */
 package javax.microedition.lcdui;
 
-import java.util.ArrayList;
+import org.recompile.mobile.PlatformGraphics;
 
+import java.util.ArrayList;
 
 
 public abstract class Item
@@ -96,4 +97,23 @@ public abstract class Item
 		prefHeight = height;
 	}
 
+	protected ArrayList<Command> getCommands() {
+		return commands;
+	}
+
+	protected void doActive() {
+		if (commands.size() > 0) {
+			if (commandListener != null) {
+				commandListener.commandAction(commands.get(0), this);
+			}
+		}
+	}
+
+	protected String getString() {
+		return "";
+	}
+
+	protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
+		gc.drawString(getLabel() + getString(), x, y, Graphics.TOP | Graphics.LEFT);
+	}
 }

@@ -17,6 +17,9 @@
 package javax.microedition.lcdui;
 
 
+import org.recompile.mobile.Mobile;
+import org.recompile.mobile.MobilePlatform;
+import org.recompile.mobile.PlatformGraphics;
 
 public class TextField extends Item
 {
@@ -105,4 +108,26 @@ public class TextField extends Item
 
 	public int size() { return text.length(); }
 
+	protected void doActive() {
+		Mobile.getPlatform().openInputFrame(this, null, text);
+	}
+
+	protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
+		gc.drawString(getLabel(), x, y, Graphics.TOP | Graphics.LEFT);
+		int dx = Font.getDefaultFont().stringWidth(getLabel());
+		gc.setColor(0xffd0d0d0);
+		int tfw = w - dx - 2;
+		int tfh = h - 1;
+		gc.fillRect(dx, y, tfw, tfh);
+		gc.setColor(0xff808080);
+		gc.drawRect(dx, y, tfw, tfh);
+		int cx = gc.getClipX();
+		int cy = gc.getClipY();
+		int cw = gc.getClipWidth();
+		int ch = gc.getClipHeight();
+		gc.setClip(dx + 1, y + 1, tfw - 2, tfh - 2);
+		gc.setColor(0xff000000);
+		gc.drawString(getString(), dx + 1, y + 1, Graphics.TOP | Graphics.LEFT);
+		gc.setClip(cx, cy, cw, ch);
+	}
 }

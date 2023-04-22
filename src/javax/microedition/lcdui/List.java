@@ -18,9 +18,6 @@ package javax.microedition.lcdui;
 
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
-import org.recompile.mobile.PlatformGraphics;
-
-import java.util.ArrayList;
 
 public class List extends Screen implements Choice
 {
@@ -98,7 +95,7 @@ public class List extends Screen implements Choice
 
 	public int getSelectedIndex() { return currentItem; }
 
-	public String getString(int elementNum) { return ((StringItem)(items.get(elementNum))).getText(); }
+	public String getString(int elementNum) { return ((StringItem)(items.get(elementNum))).getString(); }
 
 	public void insert(int elementNum, String stringPart, Image imagePart)
 	{

@@ -17,11 +17,13 @@
 package javax.microedition.lcdui;
 
 
+import org.recompile.mobile.Mobile;
+import org.recompile.mobile.PlatformGraphics;
+import org.recompile.mobile.PlatformImage;
 
 public class TextBox extends Screen
 {
 
-	private String title;
 	private String text;
 	private int max;
 	private int constraints;
@@ -35,11 +37,13 @@ public class TextBox extends Screen
 		text = value;
 		max = maxSize;
 		constraints = Constraints;
+		platformImage = new PlatformImage(width, height);
 	}
 
 	public void delete(int offset, int length)
 	{
 		text = text.substring(0, offset) + text.substring(offset+length);
+		render();
 	}
 
 	public int getCaretPosition() { return 0; }
@@ -59,6 +63,11 @@ public class TextBox extends Screen
 
 	public String getString() { return text; }
 
+	@Override
+	public String getTitle() {
+		return title;
+	}
+
 	public void insert(char[] data, int offset, int length, int position)
 	{
 		StringBuilder out = new StringBuilder();
@@ -66,6 +75,7 @@ public class TextBox extends Screen
 		out.append(data, offset, length);
 		out.append(text.substring(position));
 		text = out.toString();
+		render();
 	}
 
 	public void insert(String src, int position)
@@ -75,6 +85,7 @@ public class TextBox extends Screen
 		out.append(src);
 		out.append(text.substring(position));
 		text = out.toString();
+		render();
 	}
 
 	public void setChars(char[] data, int offset, int length)
@@ -82,6 +93,7 @@ public class TextBox extends Screen
 		StringBuilder out = new StringBuilder();
 		out.append(data, offset, length);
 		text = out.toString();
+		render();
 	}
 
 	public void setConstraints(int Constraints) { constraints = Constraints;  }
@@ -90,12 +102,58 @@ public class TextBox extends Screen
 
 	public int setMaxSize(int maxSize) { max = maxSize; return max; }
 
-	public void setString(String value) { text = value; }
+	public void setString(String value) { text = value; render();}
 
 	public void setTicker(Ticker tick) { ticker = tick; }
 
-	public void setTitle(String s) { title = s; }
+	public void setTitle(String s) { title = s; render();}
 
 	public int size() { return text.length(); }
 
- }
+
+	public void keyReleased(int key)
+	{
+		if(listCommands==true)
+		{
+			keyPressedCommands(key);
+			return;
+		}
+
+		switch(key)
+		{
+			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
+			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
+			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
+			case Mobile.KEY_NUM0:
+			case Mobile.KEY_NUM1:
+			case Mobile.KEY_NUM2:
+			case Mobile.KEY_NUM3:
+			case Mobile.KEY_NUM4:
+			case Mobile.KEY_NUM5:
+			case Mobile.KEY_NUM6:
+			case Mobile.KEY_NUM7:
+			case Mobile.KEY_NUM8:
+			case Mobile.KEY_NUM9:
+			case Mobile.KEY_STAR:
+			case Mobile.KEY_POUND: doDefaultCommand(); break;
+		}
+		render();
+	}
+
+	protected void doDefaultCommand() {
+		Mobile.getPlatform().openInputFrame(null, this, text);
+	}
+
+	protected void render()
+	{
+		super.render();
+		PlatformGraphics gc = platformImage.getGraphics();
+		gc.setColor(0xff000000);
+		gc.setClip(0, 0, width, height);
+		gc.drawString(text, 3, 30, Graphics.LEFT | Graphics.TOP);
+		if(this.getDisplay().getCurrent() == this)
+		{
+			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+		}
+	}
+}

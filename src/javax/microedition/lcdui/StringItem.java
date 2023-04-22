@@ -50,4 +50,7 @@ public class StringItem extends Item
 
 	public void setText(String textvalue) { text = textvalue; }
 
+	protected String getString() {
+		return text;
+	}
 }
