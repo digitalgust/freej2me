@@ -171,7 +171,7 @@ public class List extends Screen implements Choice
 		Draw list, handle input
 	*/
 
-	public void keyPressed(int key)
+	public void keyReleased(int key)
 	{
 		if(items.size()<1) { return; }
 		switch(key)

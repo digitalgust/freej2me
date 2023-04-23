@@ -86,17 +86,23 @@ public class FreeJ2ME
 		{
 			jarfile = args[0];
 		}
-		if(args.length>=3)
+		String dataPath = "";
+		if (args.length >= 2) {
+			dataPath = args[1];
+		}
+
+		if(args.length>=4)
 		{
 			lcdWidth = Integer.parseInt(args[1]);
 			lcdHeight = Integer.parseInt(args[2]);
 		}
-		if(args.length>=4)
+		if(args.length>=5)
 		{
 			scaleFactor = Integer.parseInt(args[3]);
 		}
 
 		Mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight));
+		Mobile.getPlatform().dataPath = dataPath;
 
 		lcd = new LCD();
 		lcd.setFocusable(true);

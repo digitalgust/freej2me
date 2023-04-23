@@ -215,7 +215,7 @@ public class MobilePlatform
 		}
 		Frame frame = new Frame();
 		inputFrame = frame;
-		frame.setPreferredSize(new Dimension(240, 240));
+		frame.setPreferredSize(new Dimension(240, 200));
 		frame.setLayout(null);
 		frame.setResizable(false);
 		frame.setVisible(true);
@@ -250,7 +250,7 @@ public class MobilePlatform
 		}
 		java.awt.Button okBtn = new Button("OK");
 		panel.add(okBtn);
-		okBtn.setBounds(0, panH - COMP_H, panW / 2, COMP_H - 4);
+		okBtn.setBounds(panW / 2, panH - COMP_H, panW / 2, COMP_H - 4);
 
 		okBtn.addActionListener(new ActionListener() {
 			void closeWindow() {
@@ -269,11 +269,12 @@ public class MobilePlatform
 					textField.setString(s);
 					closeWindow();
 				}
+				Mobile.getDisplay().getCurrent().renderItems();
 			}
 		});
 
 		java.awt.Button cancelBtn = new Button("CANCEL");
-		cancelBtn.setBounds(panW / 2, panH - COMP_H, panW / 2, COMP_H - 4);
+		cancelBtn.setBounds(0, panH - COMP_H, panW / 2, COMP_H - 4);
 		panel.add(cancelBtn);
 		cancelBtn.addActionListener(new ActionListener() {
 			@Override

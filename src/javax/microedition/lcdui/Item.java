@@ -109,6 +109,10 @@ public abstract class Item
 		}
 	}
 
+	protected ItemCommandListener getCommandListener() {
+		return commandListener;
+	}
+
 	protected String getString() {
 		return "";
 	}

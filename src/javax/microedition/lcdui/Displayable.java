@@ -283,13 +283,16 @@ public abstract class Displayable
 		if(listCommands==true) { renderCommands(); }
 	}
 
-	protected void doCommand(int index)
-	{
-		if(index>=0 && combinedCommands.size()>index)
-		{
-			if(commandlistener!=null)
-			{
-				commandlistener.commandAction(combinedCommands.get(index), this);
+	protected void doCommand(int index) {
+		if (index >= 0 && combinedCommands.size() > index) {
+			if (commandlistener != null) {
+				Command cmd = combinedCommands.get(index);
+				if (isCurrentItemOwn(cmd)) {
+					Item cur = getCurrentItem();
+					cur.getCommandListener().commandAction(cmd, cur);
+				} else {
+					commandlistener.commandAction(cmd, this);
+				}
 			}
 		}
 	}
@@ -343,5 +346,13 @@ public abstract class Displayable
 				doCommand(1);
 			}
 		}
+	}
+
+	protected boolean isCurrentItemOwn(Command cmd) {
+		Item cur = getCurrentItem();
+		if (cur != null) {
+			return cur.getCommands().contains(cmd);
+		}
+		return false;
 	}
 }
