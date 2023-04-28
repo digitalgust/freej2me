@@ -64,6 +64,8 @@ public abstract class Item
 
 	private int prefHeight = 16;
 
+	int left, top, width, height;
+
 
 	public void addCommand(Command cmd) { commands.add(cmd); }
 
@@ -115,6 +117,19 @@ public abstract class Item
 
 	protected String getString() {
 		return "";
+	}
+
+	protected void setBondle(int left, int top, int width, int height) {
+		this.left=left;
+		this.top=top;
+		this.width=width;
+		this.height=height;
+	}
+	protected boolean isInRange(int x, int y) {
+		if (x >= left && x <= left + width && y >= top && y <= top + height) {
+			return true;
+		}
+		return false;
 	}
 
 	protected void render(PlatformGraphics gc, int x, int y, int w, int h) {

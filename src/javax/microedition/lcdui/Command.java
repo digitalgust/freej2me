@@ -38,6 +38,7 @@ public class Command
 
 	private int priority;
 
+	int left, top, width, height;
 
 	public Command(String text, int cmdType, int cmdPriority)
 	{
@@ -75,4 +76,16 @@ public class Command
 
 	public int getPriority() { return priority; }
 
+	protected void setBondle(int left, int top, int width, int height) {
+		this.left=left;
+		this.top=top;
+		this.width=width;
+		this.height=height;
+	}
+	protected boolean isInRange(int x, int y) {
+		if (x >= left && x <= left + width && y >= top && y <= top + height) {
+			return true;
+		}
+		return false;
+	}
 }

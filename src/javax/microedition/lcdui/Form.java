@@ -115,19 +115,59 @@ public class Form extends Screen
 		if(items.size()<1) { return; }
 		switch(key)
 		{
-			case Mobile.KEY_NUM2: currentItem--; break;
-			case Mobile.KEY_NUM8: currentItem++; break;
+			//case Mobile.KEY_NUM2: currentItem--; break;
+			//case Mobile.KEY_NUM8: currentItem++; break;
 			case Mobile.NOKIA_UP: currentItem--; break;
 			case Mobile.NOKIA_DOWN: currentItem++; break;
 			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
 			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
 			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
-			case Mobile.KEY_NUM5: doDefaultCommand(); break;
+			//case Mobile.KEY_NUM5: doDefaultCommand(); break;
 		}
 		if (currentItem>=items.size()) { currentItem=0; }
 		if (currentItem<0) { currentItem = items.size()-1; }
 		render();
 	}
+
+	int getItemIndex(int x, int y) {
+		for (int i = 0; i < items.size(); i++) {
+			Item item = items.get(i);
+			if (item != null) {
+				if (item.isInRange(x, y)) return i;
+			}
+		}
+		return -1;
+	}
+
+	int getCommandIndex(int x, int y) {
+		for (int i = 0; i < combinedCommands.size(); i++) {
+			Command cmd = combinedCommands.get(i);
+			if (cmd != null) {
+				if (cmd.isInRange(x, y)) return i;
+			}
+		}
+		return -1;
+	}
+
+	public void pointerPressed(int x, int y) {
+		super.pointerPressed(x, y);
+	}
+
+	public void pointerReleased(int x, int y) {
+		super.pointerReleased(x, y);
+		int itemIdx = getItemIndex(x, y);
+		if (itemIdx >= 0 && itemIdx < items.size()) {
+			currentItem = itemIdx;
+			doDefaultCommand();
+			return;
+		}
+
+		int commandIdx = getCommandIndex(x, y);
+		if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
+			doCommand(commandIdx);
+		}
+	}
+
 
 	public void notifySetCurrent()
 	{

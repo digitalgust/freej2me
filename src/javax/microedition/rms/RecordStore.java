@@ -510,7 +510,7 @@ public class RecordStore
 
 		public boolean hasNextElement()
 		{
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			if (index<count)
 			{
 				return true;
@@ -520,7 +520,7 @@ public class RecordStore
 
 		public boolean hasPreviousElement()
 		{
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			if(index>0)
 			{
 				return true;
@@ -535,7 +535,7 @@ public class RecordStore
 		public byte[] nextRecord() throws InvalidRecordIDException
 		{
 			//System.out.println("> Next Record");
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			if(index>=count)
 			{
 				throw(new InvalidRecordIDException());
@@ -547,22 +547,24 @@ public class RecordStore
 		public int nextRecordId() throws InvalidRecordIDException
 		{
 			//System.out.println("> Next Record ID (idx:"+index+" cnt:"+count+")");
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			if(index>=count) { throw(new InvalidRecordIDException()); }
-			return elements[index];
+			int r = elements[index];
+			index++;
+			return r;
 		}
 
 		public int numRecords()
 		{
 			//System.out.println("> numRecords()");
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			return count;
 		}
 
 		public byte[] previousRecord() throws InvalidRecordIDException
 		{
 			//System.out.println("> Previous Record");
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			index--;
 			if(index>=0)
 			{
@@ -579,9 +581,11 @@ public class RecordStore
 		public int previousRecordId() throws InvalidRecordIDException
 		{
 			//System.out.println("> Previous Record ID");
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			if(index==0) { throw(new InvalidRecordIDException()); }
-			return elements[index-1];
+			int r = elements[index-1];
+			index--;
+			return r;
 		}
 
 		public void rebuild()
@@ -593,7 +597,7 @@ public class RecordStore
 
 		public void reset()
 		{
-			if(keepupdated) { rebuild(); }
+			if(keepupdated) { build(); }
 			index = 0;
 		}
 	}

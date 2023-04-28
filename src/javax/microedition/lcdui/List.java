@@ -176,14 +176,14 @@ public class List extends Screen implements Choice
 		if(items.size()<1) { return; }
 		switch(key)
 		{
-			case Mobile.KEY_NUM2: currentItem--; break;
-			case Mobile.KEY_NUM8: currentItem++; break;
+			//case Mobile.KEY_NUM2: currentItem--; break;
+			//case Mobile.KEY_NUM8: currentItem++; break;
 			case Mobile.NOKIA_UP: currentItem--; break;
 			case Mobile.NOKIA_DOWN: currentItem++; break;
 			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
 			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
 			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
-			case Mobile.KEY_NUM5: doDefaultCommand(); break;
+			//case Mobile.KEY_NUM5: doDefaultCommand(); break;
 		}
 		if (currentItem>=items.size()) { currentItem=0; }
 		if (currentItem<0) { currentItem = items.size()-1; }

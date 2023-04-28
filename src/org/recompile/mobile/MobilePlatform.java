@@ -114,17 +114,23 @@ public class MobilePlatform
 
 	public void pointerDragged(int x, int y)
 	{
-		Mobile.getDisplay().getCurrent().pointerDragged(x, y);
+		if (Mobile.getDisplay() != null && Mobile.getDisplay().getCurrent() != null) {
+			Mobile.getDisplay().getCurrent().pointerDragged(x, y);
+		}
 	}
 
 	public void pointerPressed(int x, int y)
 	{
-		Mobile.getDisplay().getCurrent().pointerPressed(x, y);
+		if (Mobile.getDisplay() != null && Mobile.getDisplay().getCurrent() != null) {
+			Mobile.getDisplay().getCurrent().pointerPressed(x, y);
+		}
 	}
 
 	public void pointerReleased(int x, int y)
 	{
-		Mobile.getDisplay().getCurrent().pointerReleased(x, y);
+		if (Mobile.getDisplay() != null && Mobile.getDisplay().getCurrent() != null) {
+			Mobile.getDisplay().getCurrent().pointerReleased(x, y);
+		}
 	}
 
 	private void updateKeyState(int key, int val)

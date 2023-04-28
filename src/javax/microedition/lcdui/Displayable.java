@@ -153,16 +153,16 @@ public abstract class Displayable
 			{	
 				if(currentItem == i)
 				{
-					gc.fillRect(0,y,width,ITEM_H);
+					gc.fillRect(0, y, width, ITEM_H);
 					gc.setColor(0xFFFFFF);
 				}
-				Item item=items.get(i);
+				Item item = items.get(i);
+				item.setBondle(0, y, getWidth(), ITEM_H);
 				item.render(gc, 0, y, getWidth(), ITEM_H);
 
 				gc.setColor(0x000000);
-				if(items.get(i) instanceof ImageItem)
-				{
-					gc.drawImage(((ImageItem)items.get(i)).getImage(), width/2, y, Graphics.HCENTER);
+				if (items.get(i) instanceof ImageItem) {
+					gc.drawImage(((ImageItem) items.get(i)).getImage(), width / 2, y, Graphics.HCENTER);
 				}
 				y+=ITEM_H;
 			}
@@ -175,12 +175,18 @@ public abstract class Displayable
 		{
 			case 0: break;
 			case 1:
-				gc.drawString(combinedCommands.get(0).getLabel(), 3, height-17, Graphics.LEFT);
+				Command cmd = combinedCommands.get(0);
+				cmd.setBondle(0, height-ITEM_H, width/3, ITEM_H);
+				gc.drawString(combinedCommands.get(0).getLabel(), 3, height-ITEM_H, Graphics.LEFT);
 				gc.drawString(""+(currentItem+1)+" of "+items.size(), width-3, height-17, Graphics.RIGHT);
 				break;
 			case 2:
-				gc.drawString(combinedCommands.get(0).getLabel(), 3, height-17, Graphics.LEFT);
-				gc.drawString(combinedCommands.get(1).getLabel(), width-3, height-17, Graphics.RIGHT);
+				cmd = combinedCommands.get(0);
+				cmd.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
+				cmd = combinedCommands.get(1);
+				cmd.setBondle(width * 2 / 3, height - ITEM_H, width / 3, ITEM_H);
+				gc.drawString(combinedCommands.get(0).getLabel(), 3, height-ITEM_H, Graphics.LEFT);
+				gc.drawString(combinedCommands.get(1).getLabel(), width-3, height-ITEM_H, Graphics.RIGHT);
 				break;
 			default:
 				gc.drawString("Options", 3, height-17, Graphics.LEFT);
@@ -231,7 +237,9 @@ public abstract class Displayable
 					gc.setColor(0xFFFFFF);
 				}
 
-				gc.drawString(combinedCommands.get(i).getLabel(), width/2, y, Graphics.HCENTER);
+				Command cmd = combinedCommands.get(i);
+				cmd.setBondle(0, y, width, ITEM_H);
+				gc.drawString(cmd.getLabel(), width/2, y, Graphics.HCENTER);
 
 				gc.setColor(0x000000);
 				y+=ITEM_H;
