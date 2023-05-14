@@ -155,7 +155,7 @@ public abstract class Canvas extends Displayable
 
 	public void pointerReleased(int x, int y) { }
 
-	public void repaint()
+	public synchronized void repaint()
 	{
 		PlatformGraphics graphics;
 		try
@@ -163,7 +163,7 @@ public abstract class Canvas extends Displayable
             if (Mobile.getDisplay().getCurrent() == this) {
                 graphics = platformImage.getGraphics();
                 graphics.reset();
-                paint(graphics);
+				paint(graphics);
                 Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
             }
         }
@@ -174,7 +174,7 @@ public abstract class Canvas extends Displayable
 		}
 	}
 
-	public void repaint(int x, int y, int width, int height)
+	public synchronized void repaint(int x, int y, int width, int height)
 	{
 		PlatformGraphics graphics = platformImage.getGraphics();
 		graphics.reset();
