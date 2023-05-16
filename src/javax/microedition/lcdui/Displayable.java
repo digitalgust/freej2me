@@ -52,6 +52,8 @@ public abstract class Displayable
 
 	public Ticker ticker;
 
+	protected Command options, optionsLeft, optionsRight;
+
 	public Displayable()
 	{
 		width = Mobile.getPlatform().lcdWidth;
@@ -108,7 +110,7 @@ public abstract class Displayable
 		render();
 	}
 
-	protected void render()
+	public void render()
 	{
 		if(listCommands==true)
 		{
@@ -169,6 +171,19 @@ public abstract class Displayable
 		}
 
 		combinAll();
+
+		if (combinedCommands.size() > 2) {
+			if (options == null) {
+				options = new Command("Options", Command.SCREEN, 0);
+				options.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
+				optionsLeft = new Command("Options", Command.SCREEN, 0);
+				optionsLeft.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
+				optionsRight = new Command("Options", Command.SCREEN, 0);
+				optionsRight.setBondle(width * 2 / 3, height - ITEM_H, width / 3, ITEM_H);
+			}
+		} else {
+			options = null;
+		}
 
 		// Draw Commands
 		switch(combinedCommands.size())
@@ -362,5 +377,9 @@ public abstract class Displayable
 			return cur.getCommands().contains(cmd);
 		}
 		return false;
+	}
+
+	protected ArrayList<Command> getCombinedCommands() {
+		return combinedCommands;
 	}
 }

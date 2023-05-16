@@ -213,11 +213,15 @@ public class MobilePlatform
 		//System.gc();
 	}
 
+    public Frame getInputFrame() {
+        return inputFrame;
+    }
 
-	public void openInputFrame(javax.microedition.lcdui.TextField textField, javax.microedition.lcdui.TextBox textBox, String text) {
+    public void openInputFrame(javax.microedition.lcdui.TextField textField, javax.microedition.lcdui.TextBox textBox, String text) {
 		if (textBox == null && textField == null) return;
 		if (inputFrame != null) {
-			inputFrame.dispose();
+			return;
+			//inputFrame.dispose();
 		}
 		Frame frame = new Frame();
 		inputFrame = frame;
@@ -231,6 +235,7 @@ public class MobilePlatform
 			public void windowClosing(WindowEvent e) {
 				frame.setVisible(false);
 				frame.dispose();
+                inputFrame = null;
 			}
 		});
 		String title = textBox == null ? textField.getLabel() : textBox.getTitle();
@@ -247,9 +252,12 @@ public class MobilePlatform
 		java.awt.TextArea awtBox = new TextArea(text);
 		java.awt.TextField awtField = new java.awt.TextField(text);
 		final int COMP_H = 40;
+		java.awt.Label lab = new Label("Input text:");
+		panel.add(lab);
+		lab.setBounds(0, 0, panW, COMP_H);
 		if (textBox != null) {
 			panel.add(awtBox);
-			awtBox.setBounds(0, 0, panW, panH - COMP_H);
+			awtBox.setBounds(0, COMP_H, panW, panH - COMP_H * 2);
 		} else {
 			panel.add(awtField);
 			awtField.setBounds(0, (panH - COMP_H * 2) / 2, panW, COMP_H);
@@ -262,6 +270,7 @@ public class MobilePlatform
 			void closeWindow() {
 				frame.setVisible(false);
 				frame.dispose();
+                inputFrame = null;
 			}
 
 			@Override
@@ -275,7 +284,7 @@ public class MobilePlatform
 					textField.setString(s);
 					closeWindow();
 				}
-				Mobile.getDisplay().getCurrent().renderItems();
+				Mobile.getDisplay().getCurrent().render();
 			}
 		});
 
@@ -287,6 +296,7 @@ public class MobilePlatform
 			public void actionPerformed(ActionEvent e) {
 				frame.setVisible(false);
 				frame.dispose();
+                inputFrame = null;
 			}
 		});
 	}

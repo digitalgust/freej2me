@@ -21,6 +21,8 @@ import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformGraphics;
 import org.recompile.mobile.PlatformImage;
 
+import java.util.ArrayList;
+
 public class TextBox extends Screen
 {
 
@@ -141,17 +143,62 @@ public class TextBox extends Screen
 	}
 
 	protected void doDefaultCommand() {
-		Mobile.getPlatform().openInputFrame(null, this, text);
+
+        if (Mobile.getPlatform().getInputFrame() == null) {
+            Mobile.getPlatform().openInputFrame(null, this, text);
+        }
+    }
+
+	public void pointerPressed(int x, int y) {
+		super.pointerPressed(x, y);
+		//
+
+		ArrayList<Command> cmds = getCombinedCommands();
+		for (int i = 0; i < cmds.size(); i++) {
+			Command c = cmds.get(i);
+			if (c.isInRange(x, y)) {
+				doCommand(i);
+				currentCommand = i;
+				render();
+				return;
+			}
+		}
+		if (listCommands == false) {
+			if (options != null) {
+				if (options.isInRange(x, y)) {
+					listCommands = true;
+					render();
+					return;
+				}
+			}
+			doDefaultCommand();//open text input
+		} else {
+			if (optionsLeft != null && optionsLeft.isInRange(x, y)) {
+				doLeftCommand();
+				render();
+			} else if (optionsRight != null && optionsRight.isInRange(x, y)) {
+				doRightCommand();
+				render();
+			}
+		}
 	}
 
-	protected void render()
+    public void pointerReleased(int x, int y) {
+        super.pointerReleased(x, y);
+    }
+	public void render()
 	{
 		super.render();
 		PlatformGraphics gc = platformImage.getGraphics();
-		gc.setColor(0xff000000);
 		gc.setClip(0, 0, width, height);
-		gc.drawString(text, 3, 30, Graphics.LEFT | Graphics.TOP);
-		if(this.getDisplay().getCurrent() == this)
+        if (text == null || text.length() == 0) {
+            gc.setColor(0xffc0c0c0);
+            gc.drawString("press ENTER", 3, 30, Graphics.LEFT | Graphics.TOP);
+        } else {
+            gc.setColor(0xff000000);
+            gc.drawString(text, 3, 30, Graphics.LEFT | Graphics.TOP);
+        }
+        if (this.getDisplay().getCurrent() == this)
 		{
 			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
 		}
