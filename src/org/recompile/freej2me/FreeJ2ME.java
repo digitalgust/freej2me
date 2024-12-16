@@ -124,7 +124,7 @@ public class FreeJ2ME
 			public void keyPressed(KeyEvent e)
 			{
 				int keycode = e.getKeyCode();
-				int mobikey = getMobileKey(keycode);
+				int mobikey = getMobileKey(keycode, true);
 				int mobikeyN = (mobikey + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
 				
 				switch(keycode) // Handle emulator control keys
@@ -178,7 +178,7 @@ public class FreeJ2ME
 
 			public void keyReleased(KeyEvent e)
 			{
-				int mobikey = getMobileKey(e.getKeyCode());
+				int mobikey = getMobileKey(e.getKeyCode(), false);
 				int mobikeyN = (mobikey + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
 				
 				if (mobikey == 0) //Ignore events from keys not mapped to a phone keypad key
@@ -359,7 +359,7 @@ public class FreeJ2ME
 		}
 	}
 
-	private int getMobileKey(int keycode)
+	private int getMobileKey(int keycode, boolean isKeyPressed)
 	{
 		if(useNokiaControls)
 		{
@@ -449,7 +449,14 @@ public class FreeJ2ME
 			case KeyEvent.VK_Z: return -2;
 
 			// Config //
-			case KeyEvent.VK_ESCAPE: config.start();
+			case KeyEvent.VK_ESCAPE:
+				if (!isKeyPressed) {
+					if (config.isRunning) {
+						config.stop();
+					} else {
+						config.start();
+					}
+				}
 		}
 		return 0;
 	}
