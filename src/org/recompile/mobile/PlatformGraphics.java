@@ -203,6 +203,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		}
 		catch (Exception e)
 		{
+			e.printStackTrace();
 			//System.out.println("flushGraphics A:"+e.getMessage());
 		}
 	}

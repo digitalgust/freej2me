@@ -262,33 +262,54 @@ public class MobilePlatform
 			panel.add(awtField);
 			awtField.setBounds(0, (panH - COMP_H * 2) / 2, panW, COMP_H);
 		}
-		java.awt.Button okBtn = new Button("OK");
+		java.awt.Button okBtn = new Button("Ok(ENTER)");
 		panel.add(okBtn);
 		okBtn.setBounds(panW / 2, panH - COMP_H, panW / 2, COMP_H - 4);
 
-		okBtn.addActionListener(new ActionListener() {
-			void closeWindow() {
-				frame.setVisible(false);
-				frame.dispose();
+        class OkBtnResponder extends KeyAdapter implements ActionListener {
+            void closeWindow() {
+                frame.setVisible(false);
+                frame.dispose();
                 inputFrame = null;
-			}
+            }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (textBox != null) {
-					String s = awtBox.getText();
-					textBox.setString(s);
-					closeWindow();
-				} else if (textField != null) {
-					String s = awtField.getText();
-					textField.setString(s);
-					closeWindow();
-				}
-				Mobile.getDisplay().getCurrent().render();
-			}
-		});
+            void action() {
+                if (textBox != null) {
+                    String s = awtBox.getText();
+                    textBox.setString(s);
+                    closeWindow();
+                } else if (textField != null) {
+                    String s = awtField.getText();
+                    textField.setString(s);
+                    closeWindow();
+                }
+                Mobile.getDisplay().getCurrent().render();
+            }
 
-		java.awt.Button cancelBtn = new Button("CANCEL");
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                action();
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    action();
+                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                    closeWindow();
+                }
+            }
+        }
+        ;
+		OkBtnResponder okBtnResp = new OkBtnResponder();
+		okBtn.addActionListener(okBtnResp);
+		//okBtn响应回车键
+        okBtn.addKeyListener(okBtnResp);
+        awtBox.addKeyListener(okBtnResp);
+        awtField.addKeyListener(okBtnResp);
+
+
+		java.awt.Button cancelBtn = new Button("Cancel(ESC)");
 		cancelBtn.setBounds(0, panH - COMP_H, panW / 2, COMP_H - 4);
 		panel.add(cancelBtn);
 		cancelBtn.addActionListener(new ActionListener() {
