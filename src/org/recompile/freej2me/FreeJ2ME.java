@@ -197,7 +197,7 @@ public class FreeJ2ME
 					//~ System.out.println("keyReleased: " + Integer.toString(mobikey));
 					Mobile.getPlatform().keyReleased(mobikey);
 				}
-				lcd.repaint();
+				//lcd.repaint();  //gust 导致闪屏
 			}
 
 			public void keyTyped(KeyEvent e) { }
@@ -233,7 +233,7 @@ public class FreeJ2ME
 				}
 
 				Mobile.getPlatform().pointerReleased(x, y);
-				lcd.repaint();
+				//lcd.repaint(); //gust 导致闪屏
 			}
 
 			public void mouseExited(MouseEvent e) { }
