@@ -32,7 +32,9 @@ import javax.microedition.io.Connection;
 import javax.microedition.io.Connector;
 import javax.microedition.io.SocketConnection;
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
 
 /**
@@ -278,19 +280,35 @@ public class Protocol implements ConnectionBaseInterface, SocketConnection {
 
 
     public String getLocalAddress() {
-        return socket.getLocalAddress().toString();
+        InetSocketAddress addr = (InetSocketAddress) socket.getLocalSocketAddress();
+        if (addr != null) {
+            return addr.getHostName();
+        }
+        return null;
     }
 
     public int getLocalPort() {
-        return socket.getLocalPort();
+        InetSocketAddress addr = (InetSocketAddress) socket.getLocalSocketAddress();
+        if (addr != null) {
+            return addr.getPort();
+        }
+        return -1;
     }
 
     public String getAddress() {
-        return socket.getRemoteSocketAddress().toString();
+        InetSocketAddress addr = (InetSocketAddress) socket.getRemoteSocketAddress();
+        if (addr != null) {
+            return addr.getHostName();
+        }
+        return null;
     }
 
     public int getPort() {
-        return socket.getPort();
+        InetSocketAddress addr = (InetSocketAddress) socket.getRemoteSocketAddress();
+        if (addr != null) {
+            return addr.getPort();
+        }
+        return -1;
     }
 
 

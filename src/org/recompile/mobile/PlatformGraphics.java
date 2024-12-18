@@ -315,15 +315,20 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void setColor(int rgb)
 	{
-		setColor((rgb>>16) & 0xFF, (rgb>>8) & 0xFF, rgb & 0xFF);
+		setColor((rgb>>16) & 0xFF, (rgb>>8) & 0xFF, rgb & 0xFF,0xff);
 	}
 
 	public void setColor(int r, int g, int b)
 	{
-		color = (r<<16) + (g<<8) + b;
-		awtColor = new Color(r, g, b);
-		gc.setColor(awtColor);
+		setColor(r, g, b,0xff);
 	}
+
+    public void setColor(int r, int g, int b, int a) {
+        color = (r << 16) + (g << 8) + b;
+        colorAlpha = a;
+        awtColor = new Color(r, g, b, a);
+        gc.setColor(awtColor);
+    }
 
 	public void setFont(Font font)
 	{
@@ -408,8 +413,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 	public void setARGBColor(int argbColor)
 	{
-		colorAlpha = (argbColor>>>24) & 0xFF;
-		setColor(argbColor);
+        int a = (argbColor>>>24) & 0xFF;
+        setColor( argbColor & 0xFF, (argbColor>>>8) & 0xFF, (argbColor>>>16) & 0xFF, a);
 	}
 
 	public void drawImage(javax.microedition.lcdui.Image img, int x, int y, int anchor, int manipulation)
