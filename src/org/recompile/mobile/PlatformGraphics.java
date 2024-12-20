@@ -420,10 +420,11 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 	public void drawImage(javax.microedition.lcdui.Image img, int x, int y, int anchor, int manipulation)
 	{
 		//System.out.println("Nokia drawImage");
-		BufferedImage image = manipulateImage(img.platformImage.getCanvas(), manipulation);
-		x = AnchorX(x, image.getWidth(), anchor);
-		y = AnchorY(y, image.getHeight(), anchor);
-		drawImage2(image, x, y);
+		PlatformImageTransform pt = manipulateImage(img.platformImage.getCanvas(), manipulation);
+		BufferedImage bi = PlatformImage.getTransformedImage(img.platformImage.getCanvas(), pt);
+		x = AnchorX(x, pt.width, anchor);
+		y = AnchorY(y, pt.height, anchor);
+		drawImage2(bi, x, y);
 		//drawImage2Test(image, x, y);
 	}
 
@@ -434,6 +435,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		int c = 0;
 		int[] data;
 		BufferedImage temp;
+		PlatformImageTransform pt;
+		BufferedImage bi;
 		switch(format)
 		{
 			case -1: // TYPE_BYTE_1_GRAY_VERTICAL // used by Monkiki's Castles
@@ -457,7 +460,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
 				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				temp.setRGB(0, 0, width, height, data, 0, width);
-				gc.drawImage(manipulateImage(temp, manipulation), x, y, null);
+				pt = manipulateImage(temp, manipulation);
+				bi = PlatformImage.getTransformedImage(temp, pt);
+				gc.drawImage(bi, x, y, null);
 			break;
 
 			case 1: // TYPE_BYTE_1_GRAY // used by Monkiki's Castles
@@ -474,7 +479,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 				}
 				temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 				temp.setRGB(0, 0, width, height, data, 0, scanlength);
-				gc.drawImage(manipulateImage(temp, manipulation), x, y, null);
+				pt = manipulateImage(temp, manipulation);
+				bi = PlatformImage.getTransformedImage(temp, pt);
+				gc.drawImage(bi, x, y, null);
 			break;
 
 			default: System.out.println("drawPixels A : Format " + format + " Not Implemented");
@@ -486,7 +493,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		//System.out.println("drawPixels B "+format+" "+transparency); // Found In Use
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		temp.setRGB(0, 0, width, height, pixels, offset, scanlength);
-		BufferedImage temp2 = manipulateImage(temp, manipulation);
+		PlatformImageTransform pt = manipulateImage(temp, manipulation);
+		BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
 		gc.drawImage(temp2, x, y, null);
 	}
 
@@ -497,12 +505,14 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		for(int i=0; i<pixels.length; i++)
 		{
 			data[i] = pixelToColor(pixels[i], format);
-			if(!transparency) { data[i] &=0x00FFFFFF; }
+			//if(!transparency) { data[i] &=0x00FFFFFF; } //gust :not same as nokia define
 		}
 
 		BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		temp.setRGB(0, 0, width, height, data, offset, scanlength);
-		gc.drawImage(manipulateImage(temp, manipulation), x, y, null);
+		PlatformImageTransform pt = manipulateImage(temp, manipulation);
+		BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
+		gc.drawImage(temp2, x, y, null);
 	}
 
 	public void drawPolygon(int[] xPoints, int xOffset, int[] yPoints, int yOffset, int nPoints, int argbColor)
@@ -654,7 +664,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 		return (short)out;
 	}
 
-	private BufferedImage manipulateImage(BufferedImage image, int manipulation)
+	private PlatformImageTransform manipulateImage(BufferedImage image, int manipulation)
 	{
 		//DirectGraphics manipulation order : rotate -> vertical mirror-> horizontal mirror
 		//Sprite manipulation order: horizontal mirror -> rotate
@@ -698,7 +708,11 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
             default:
 				System.out.println("manipulateImage "+manipulation+" not defined");
 		}
-		return image;
+		PlatformImageTransform pt = new PlatformImageTransform();
+		pt.transformType = Sprite.TRANS_NONE;
+		pt.width = image.getWidth();
+		pt.height = image.getHeight();
+		return pt;
 	}
 
 }

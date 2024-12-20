@@ -16,19 +16,14 @@
 */
 package org.recompile.mobile;
 
-import java.net.URL;
-import java.util.Arrays;
-import java.io.IOException;
+import java.awt.*;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 
 import javax.microedition.lcdui.Image;
-import javax.microedition.lcdui.Graphics;
 import javax.microedition.lcdui.game.Sprite;
-import javax.microedition.lcdui.game.GameCanvas;
 
 import javax.imageio.ImageIO;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.geom.AffineTransform;
 
@@ -199,7 +194,8 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		// Create Image From Sub-Image, Transformed //
 		BufferedImage sub = image.platformImage.canvas.getSubimage(x, y, Width, Height);
 
-		canvas = transformImage(sub, transform);
+        PlatformImageTransform pt = transformImage(sub, transform);
+		canvas = getTransformedImage(sub, pt);
 		createGraphics();
 
 		width = (int)canvas.getWidth();
@@ -231,31 +227,33 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		gc.drawRGB(rgbData, 0, 1, x, y, 1, 1, false);
 	}
 
-	public static BufferedImage transformImage(BufferedImage image, int transform)
+	public static PlatformImageTransform transformImage(BufferedImage image, int transform)
 	{
 		int width = (int)image.getWidth();
 		int height = (int)image.getHeight();
 		int out_width = width;
 		int out_height = height;
 
-		AffineTransform af = new AffineTransform();
+		PlatformImageTransform pt = new PlatformImageTransform();
+		pt.transformType = transform;
+		AffineTransform af = pt.transform;
 
 		switch (transform) {
 			case Sprite.TRANS_NONE:
 				break;
 
-			case Sprite.TRANS_ROT90: 
+			case Sprite.TRANS_ROT90:
 				af.translate(height, 0);
 				af.rotate(Math.PI / 2);
 				out_width = height;
 				out_height = width;
 				break;
 
-			case Sprite.TRANS_ROT180: 
+			case Sprite.TRANS_ROT180:
 				af.translate(width, height);
 				af.rotate(Math.PI);
 				break;
-			
+
 			case Sprite.TRANS_ROT270:
 				af.translate(0, width);
 				af.rotate(Math.PI * 3 / 2);
@@ -263,12 +261,12 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 				out_height = width;
 				break;
 
-			case Sprite.TRANS_MIRROR: 
+			case Sprite.TRANS_MIRROR:
 				af.translate(width, 0);
 				af.scale(-1, 1);
 				break;
 
-			case Sprite.TRANS_MIRROR_ROT90: 
+			case Sprite.TRANS_MIRROR_ROT90:
 				af.translate(height, 0);
 				af.rotate(Math.PI / 2);
 				af.translate(width, 0);
@@ -277,14 +275,14 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 				out_height = width;
 				break;
 
-			case Sprite.TRANS_MIRROR_ROT180: 
+			case Sprite.TRANS_MIRROR_ROT180:
 				af.translate(width, 0);
 				af.scale(-1, 1);
 				af.translate(width, height);
 				af.rotate(Math.PI);
 				break;
 
-			case Sprite.TRANS_MIRROR_ROT270: 
+			case Sprite.TRANS_MIRROR_ROT270:
 				af.translate(0, width);
 				af.rotate(Math.PI * 3 / 2);
 				af.translate(width, 0);
@@ -294,10 +292,25 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 				break;
 		}
 
-		BufferedImage transimage = new BufferedImage(out_width, out_height, BufferedImage.TYPE_INT_ARGB);
-		Graphics2D gc = transimage.createGraphics();
-		gc.drawImage(image, af, null);
+//		BufferedImage transimage = new BufferedImage(out_width, out_height, BufferedImage.TYPE_INT_ARGB);
+//		Graphics2D gc = transimage.createGraphics();
+//		gc.drawImage(image, af, null);
+//
+//		return transimage;
+		pt.width = out_width;
+		pt.height = out_height;
+		return pt;
+	}
 
-		return transimage;
+	public static BufferedImage getTransformedImage(BufferedImage image, PlatformImageTransform pt)
+	{
+        if (pt.transformType == Sprite.TRANS_NONE) {
+            return image;
+        }
+        BufferedImage transimage = new BufferedImage(pt.width, pt.height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gc = transimage.createGraphics();
+        gc.drawImage(image, pt.transform, null);
+
+        return transimage;
 	}
 }
