@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.io.InputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 
 public class Texture
@@ -36,7 +37,7 @@ public class Texture
 
 	public Texture(String name, boolean IsForModel) throws IOException
 	{
-		InputStream stream = Mobile.getPlatform().loader.getResourceAsStream(name);
+		InputStream stream = FreeJ2ME.getMobile().getPlatform().loader.getResourceAsStream(name);
 		try
 		{
 			ByteArrayOutputStream buffer = new ByteArrayOutputStream();

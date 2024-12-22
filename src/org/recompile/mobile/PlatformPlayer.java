@@ -294,7 +294,7 @@ public class PlatformPlayer implements Player
 			catch (Exception e) 
 			{ 
 				System.out.println("Couldn't load wav file: " + e.getMessage());
-				wavClip.close();
+				if (wavClip != null) wavClip.close();
 			}
 		}
 

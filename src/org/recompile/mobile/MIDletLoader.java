@@ -52,10 +52,11 @@ public class MIDletLoader extends URLClassLoader
 	public String suitename;
 
 	private Class<?> mainClass;
-	private MIDlet mainInst;
+	private MIDlet mainMidlet;
 
 	private HashMap<String, String> properties = new HashMap<String, String>(32);
 
+	public static Mobile curMobile;
 
 	public MIDletLoader(URL urls[])
 	{
@@ -92,7 +93,7 @@ public class MIDletLoader extends URLClassLoader
 
 	}
 
-	public void start() throws MIDletStateChangeException
+	public synchronized void start(Mobile mobile) throws MIDletStateChangeException
 	{
 		Method start;
 
@@ -105,7 +106,8 @@ public class MIDletLoader extends URLClassLoader
 			constructor.setAccessible(true);
 
 			MIDlet.initAppProperties(properties);
-			mainInst = (MIDlet)constructor.newInstance();
+			curMobile = mobile;
+			mainMidlet = (MIDlet)constructor.newInstance();
 		}
 		catch (Exception e)
 		{
@@ -140,7 +142,7 @@ public class MIDletLoader extends URLClassLoader
 
 		try
 		{
-			start.invoke(mainInst);
+			start.invoke(mainMidlet);
 		}
 		catch (Exception e)
 		{
@@ -483,5 +485,9 @@ public class MIDletLoader extends URLClassLoader
 				}
 			}
 		}
+	}
+
+	public MIDlet getMainMidlet() {
+		return mainMidlet;
 	}
 }

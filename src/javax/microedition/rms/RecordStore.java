@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.util.Vector;
 import java.util.Arrays;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 
 public class RecordStore
@@ -68,10 +69,10 @@ public class RecordStore
 
 		name = recordStoreName;
 
-		appname = Mobile.getPlatform().loader.suitename;
+		appname = FreeJ2ME.getMobile().getPlatform().loader.suitename;
 
-		rmsPath = Mobile.getPlatform().dataPath + "./rms/"+appname;
-		rmsFile = Mobile.getPlatform().dataPath + "./rms/"+appname+"/"+recordStoreName;
+		rmsPath = FreeJ2ME.getMobile().getPlatform().dataPath + "./rms/"+appname;
+		rmsFile = FreeJ2ME.getMobile().getPlatform().dataPath + "./rms/"+appname+"/"+recordStoreName;
 
 		try
 		{
@@ -244,7 +245,7 @@ public class RecordStore
 	{
 		try
 		{
-			File fstore = new File(Mobile.getPlatform().dataPath + "./rms/"+Mobile.getPlatform().loader.suitename+"/"+recordStoreName);
+			File fstore = new File(FreeJ2ME.getMobile().getPlatform().dataPath + "./rms/"+FreeJ2ME.getMobile().getPlatform().loader.suitename+"/"+recordStoreName);
 			fstore.delete();
 		}
 		catch (Exception e)
@@ -347,7 +348,7 @@ public class RecordStore
 		//System.out.println("List Record Stores");
 		if(rmsPath==null)
 		{
-			rmsPath = Mobile.getPlatform().dataPath + "./rms/"+Mobile.getPlatform().loader.name;
+			rmsPath = FreeJ2ME.getMobile().getPlatform().dataPath + "./rms/"+FreeJ2ME.getMobile().getPlatform().loader.name;
 			try
 			{
 				Files.createDirectories(Paths.get(rmsPath));

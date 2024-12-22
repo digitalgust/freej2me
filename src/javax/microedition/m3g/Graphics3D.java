@@ -18,6 +18,7 @@ package javax.microedition.m3g;
 
 import java.util.Hashtable;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 
 public class Graphics3D
@@ -55,7 +56,7 @@ public class Graphics3D
 
 	public int getHints() { return 0; }
 
-	public static Graphics3D getInstance() { return Mobile.getGraphics3D(); }
+	public static Graphics3D getInstance() { return FreeJ2ME.getMobile().getGraphics3D(); }
 
 	public Light getLight(int index, Transform transform) { return new Light(); }
 

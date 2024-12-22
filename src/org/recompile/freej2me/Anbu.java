@@ -31,255 +31,269 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder;
 
-public class Anbu
-{
+public class Anbu extends J2meLoader {
 
-	public static void main(String[] args)
-	{
-		Anbu app = new Anbu(args);
-	}
+    public static void main(String[] args) {
+        Anbu app = new Anbu(args);
+    }
 
-	private SDL sdl;
+    private SDL sdl;
 
-	private int lcdWidth;
-	private int lcdHeight;
+    private int lcdWidth;
+    private int lcdHeight;
 
-	private boolean[] pressedKeys = new boolean[128];
+    private boolean[] pressedKeys = new boolean[128];
 
-	private Runnable painter;
+    private Runnable painter;
 
-	public Anbu(String args[])
-	{
-		lcdWidth = 240;
-		lcdHeight = 320;
+    Mobile mobile;
 
-		if (args.length < 3)
-		{
-			System.out.println("Insufficient parameters provided");
-			return;
-		}
-		lcdWidth = Integer.parseInt(args[1]);
-		lcdHeight = Integer.parseInt(args[2]);
+    public Anbu(String args[]) {
+        lcdWidth = 240;
+        lcdHeight = 320;
 
-		Mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight));
+        if (args.length < 3) {
+            System.out.println("Insufficient parameters provided");
+            return;
+        }
+        lcdWidth = Integer.parseInt(args[1]);
+        lcdHeight = Integer.parseInt(args[2]);
 
-		painter = new Runnable()
-		{
-			public void run()
-			{
-				try
-				{
-					// Send Frame to SDL interface
-					int[] data = Mobile.getPlatform().getLCD().getRGB(0, 0, lcdWidth, lcdHeight, null, 0, lcdWidth);
-					byte[] frame = new byte[data.length * 3];
-					int cb = 0;
-					for(int i = 0; i < data.length; i++)
-					{
-						frame[cb + 0] = (byte)(data[i] >> 16);
-						frame[cb + 1] = (byte)(data[i] >> 8);
-						frame[cb + 2] = (byte)(data[i]);
-						cb += 3;
-					}
-					sdl.frame.write(frame);
-				}
-				catch (Exception e) { }
-			}
-		};
+        mobile = new Mobile(this);
+        mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight, mobile));
 
-		Mobile.getPlatform().setPainter(painter);
+        painter = new Runnable() {
+            public void run() {
+                try {
+                    // Send Frame to SDL interface
+                    int[] data = mobile.getPlatform().getLCD().getRGB(0, 0, lcdWidth, lcdHeight, null, 0, lcdWidth);
+                    byte[] frame = new byte[data.length * 3];
+                    int cb = 0;
+                    for (int i = 0; i < data.length; i++) {
+                        frame[cb + 0] = (byte) (data[i] >> 16);
+                        frame[cb + 1] = (byte) (data[i] >> 8);
+                        frame[cb + 2] = (byte) (data[i]);
+                        cb += 3;
+                    }
+                    sdl.frame.write(frame);
+                } catch (Exception e) {
+                }
+            }
+        };
 
-		String file = getFormattedLocation(args[0]);
-		System.out.println(file);
+        mobile.getPlatform().setPainter(painter);
 
-		if(Mobile.getPlatform().loadJar(file))
-		{
-			// Check config
+        String file = getFormattedLocation(args[0]);
+        System.out.println(file);
 
-			// Start SDL
-			sdl = new SDL();
-			sdl.start(args);
+        if (mobile.getPlatform().loadJar(file)) {
+            // Check config
 
-			// Run jar
-			Mobile.getPlatform().runJar();
-		}
-		else
-		{
-			System.out.println("Couldn't load jar...");
-			System.exit(0);
-		}
-	}
+            // Start SDL
+            sdl = new SDL();
+            sdl.start(args);
 
-	private static String getFormattedLocation(String loc)
-	{
-		if (loc.startsWith("file://") || loc.startsWith("http://"))
-			return loc;
+            // Run jar
+            mobile.getPlatform().runJar();
+        } else {
+            System.out.println("Couldn't load jar...");
+            System.exit(0);
+        }
+    }
 
-		File file = new File(loc);
-		if(!file.exists() || file.isDirectory())
-		{
-			System.out.println("File not found...");
-			System.exit(0);
-		}
+    private static String getFormattedLocation(String loc) {
+        if (loc.startsWith("file://") || loc.startsWith("http://"))
+            return loc;
 
-		return "file://" + file.getAbsolutePath();
-	}
+        File file = new File(loc);
+        if (!file.exists() || file.isDirectory()) {
+            System.out.println("File not found...");
+            System.exit(0);
+        }
 
-	private class SDL
-	{
-		private Timer keytimer;
-		private TimerTask keytask;
+        return "file://" + file.getAbsolutePath();
+    }
 
-		private Process proc;
-		private InputStream keys;
-		public OutputStream frame;
+    private class SDL {
+        private Timer keytimer;
+        private TimerTask keytask;
 
-		public void start(String args[])
-		{
-			try
-			{
-				args[0] = "/usr/local/bin/sdl_interface";
-				proc = new ProcessBuilder(args).start();
+        private Process proc;
+        private InputStream keys;
+        public OutputStream frame;
 
-				keys = proc.getInputStream();
-				frame = proc.getOutputStream();
+        public void start(String args[]) {
+            try {
+                args[0] = "/usr/local/bin/sdl_interface";
+                proc = new ProcessBuilder(args).start();
 
-				keytimer = new Timer();
-				keytask = new SDLKeyTimerTask();
-				keytimer.schedule(keytask, 0, 5);
-			}
-			catch (Exception e)
-			{
-				System.out.println("Failed to start sdl_interface");
-				System.out.println(e.getMessage());
-				System.exit(0);
-			}
-		}
+                keys = proc.getInputStream();
+                frame = proc.getOutputStream();
 
-		public void stop()
-		{
-			proc.destroy();
-			keytimer.cancel();
-		}
+                keytimer = new Timer();
+                keytask = new SDLKeyTimerTask();
+                keytimer.schedule(keytask, 0, 5);
+            } catch (Exception e) {
+                System.out.println("Failed to start sdl_interface");
+                System.out.println(e.getMessage());
+                System.exit(0);
+            }
+        }
 
-		private class SDLKeyTimerTask extends TimerTask
-		{
-			private int bin;
-			private byte[] din = new byte[6];
-			private int count = 0;
-			private int code;
-			private int mobikey;
-			private int mobikeyN;
+        public void stop() {
+            proc.destroy();
+            keytimer.cancel();
+        }
 
-			public void run()
-			{
-				try // to read keys
-				{
-					while(true)
-					{
-						bin = keys.read();
-						if(bin==-1) { return; }
-						//~ System.out.print(" "+bin);
-						din[count] = (byte)(bin & 0xFF);
-						count++;
-						if (count==5)
-						{
-							count = 0;
-							code = (din[1]<<24) | (din[2]<<16) | (din[3]<<8) | din[4];
-							//~ System.out.println(" ("+code+") <- Key");
-							switch(din[0] >>> 1)
-							{
-								case 0: mobikey = getMobileKey(code); break;
-								case 1: mobikey = getMobileKeyPad(code); break;
-								case 2: mobikey = getMobileKeyJoy(code); break;
-								default: continue;
-							}
-							
-							if (mobikey == 0) //Ignore events from keys not mapped to a phone keypad key
-							{
-								return; 
-							}
-							mobikeyN = (mobikey + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
-							
-							if (din[0] % 2 == 0)
-							{
-								//Key released
-								//~ System.out.println("keyReleased:  " + Integer.toString(mobikey));
-								Mobile.getPlatform().keyReleased(mobikey);
-								pressedKeys[mobikeyN] = false;
-							}
-							else
-							{
-								//Key pressed or repeated
-								if (pressedKeys[mobikeyN] == false)
-								{
-									//~ System.out.println("keyPressed:  " + Integer.toString(mobikey));
-									Mobile.getPlatform().keyPressed(mobikey);
-								}
-								else
-								{
-									//~ System.out.println("keyRepeated:  " + Integer.toString(mobikey));
-									Mobile.getPlatform().keyRepeated(mobikey);
-								}
-								pressedKeys[mobikeyN] = true;
-							}
-							
-						}
-					}
-				}
-				catch (Exception e) { }
-			}
-		} // timer
+        private class SDLKeyTimerTask extends TimerTask {
+            private int bin;
+            private byte[] din = new byte[6];
+            private int count = 0;
+            private int code;
+            private int mobikey;
+            private int mobikeyN;
 
-		private int getMobileKey(int keycode)
-		{
-			switch(keycode)
-			{
-				case 0x30: return Mobile.KEY_NUM0;
-				case 0x31: return Mobile.KEY_NUM1;
-				case 0x32: return Mobile.KEY_NUM2;
-				case 0x33: return Mobile.KEY_NUM3;
-				case 0x34: return Mobile.KEY_NUM4;
-				case 0x35: return Mobile.KEY_NUM5;
-				case 0x36: return Mobile.KEY_NUM6;
-				case 0x37: return Mobile.KEY_NUM7;
-				case 0x38: return Mobile.KEY_NUM8;
-				case 0x39: return Mobile.KEY_NUM9;
-				case 0x2A: return Mobile.KEY_STAR;
-				case 0x23: return Mobile.KEY_POUND;
+            public void run() {
+                try // to read keys
+                {
+                    while (true) {
+                        bin = keys.read();
+                        if (bin == -1) {
+                            return;
+                        }
+                        //~ System.out.print(" "+bin);
+                        din[count] = (byte) (bin & 0xFF);
+                        count++;
+                        if (count == 5) {
+                            count = 0;
+                            code = (din[1] << 24) | (din[2] << 16) | (din[3] << 8) | din[4];
+                            //~ System.out.println(" ("+code+") <- Key");
+                            switch (din[0] >>> 1) {
+                                case 0:
+                                    mobikey = getMobileKey(code);
+                                    break;
+                                case 1:
+                                    mobikey = getMobileKeyPad(code);
+                                    break;
+                                case 2:
+                                    mobikey = getMobileKeyJoy(code);
+                                    break;
+                                default:
+                                    continue;
+                            }
 
-				case 0x40000052: return Mobile.KEY_NUM2;
-				case 0x40000051: return Mobile.KEY_NUM8;
-				case 0x40000050: return Mobile.KEY_NUM4;
-				case 0x4000004F: return Mobile.KEY_NUM6;
+                            if (mobikey == 0) //Ignore events from keys not mapped to a phone keypad key
+                            {
+                                return;
+                            }
+                            mobikeyN = (mobikey + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
 
-				case 0x0D: return Mobile.KEY_NUM5;
+                            if (din[0] % 2 == 0) {
+                                //Key released
+                                //~ System.out.println("keyReleased:  " + Integer.toString(mobikey));
+                                mobile.getPlatform().keyReleased(mobikey);
+                                pressedKeys[mobikeyN] = false;
+                            } else {
+                                //Key pressed or repeated
+                                if (pressedKeys[mobikeyN] == false) {
+                                    //~ System.out.println("keyPressed:  " + Integer.toString(mobikey));
+                                    mobile.getPlatform().keyPressed(mobikey);
+                                } else {
+                                    //~ System.out.println("keyRepeated:  " + Integer.toString(mobikey));
+                                    mobile.getPlatform().keyRepeated(mobikey);
+                                }
+                                pressedKeys[mobikeyN] = true;
+                            }
 
-				case 0x71: return Mobile.NOKIA_SOFT1;
-				case 0x77: return Mobile.NOKIA_SOFT2;
-				case 0x65: return Mobile.KEY_STAR;
-				case 0x72: return Mobile.KEY_POUND;
+                        }
+                    }
+                } catch (Exception e) {
+                }
+            }
+        } // timer
 
+        private int getMobileKey(int keycode) {
+            switch (keycode) {
+                case 0x30:
+                    return Mobile.KEY_NUM0;
+                case 0x31:
+                    return Mobile.KEY_NUM1;
+                case 0x32:
+                    return Mobile.KEY_NUM2;
+                case 0x33:
+                    return Mobile.KEY_NUM3;
+                case 0x34:
+                    return Mobile.KEY_NUM4;
+                case 0x35:
+                    return Mobile.KEY_NUM5;
+                case 0x36:
+                    return Mobile.KEY_NUM6;
+                case 0x37:
+                    return Mobile.KEY_NUM7;
+                case 0x38:
+                    return Mobile.KEY_NUM8;
+                case 0x39:
+                    return Mobile.KEY_NUM9;
+                case 0x2A:
+                    return Mobile.KEY_STAR;
+                case 0x23:
+                    return Mobile.KEY_POUND;
 
-				// Inverted Num Pad
-				case 0x40000059: return Mobile.KEY_NUM7; // SDLK_KP_1
-				case 0x4000005A: return Mobile.KEY_NUM8; // SDLK_KP_2
-				case 0x4000005B: return Mobile.KEY_NUM9; // SDLK_KP_3
-				case 0x4000005C: return Mobile.KEY_NUM4; // SDLK_KP_4
-				case 0x4000005D: return Mobile.KEY_NUM5; // SDLK_KP_5
-				case 0x4000005E: return Mobile.KEY_NUM6; // SDLK_KP_6
-				case 0x4000005F: return Mobile.KEY_NUM1; // SDLK_KP_7
-				case 0x40000060: return Mobile.KEY_NUM2; // SDLK_KP_8
-				case 0x40000061: return Mobile.KEY_NUM3; // SDLK_KP_9
-				case 0x40000062: return Mobile.KEY_NUM0; // SDLK_KP_0
+                case 0x40000052:
+                    return Mobile.KEY_NUM2;
+                case 0x40000051:
+                    return Mobile.KEY_NUM8;
+                case 0x40000050:
+                    return Mobile.KEY_NUM4;
+                case 0x4000004F:
+                    return Mobile.KEY_NUM6;
+
+                case 0x0D:
+                    return Mobile.KEY_NUM5;
+
+                case 0x71:
+                    return Mobile.NOKIA_SOFT1;
+                case 0x77:
+                    return Mobile.NOKIA_SOFT2;
+                case 0x65:
+                    return Mobile.KEY_STAR;
+                case 0x72:
+                    return Mobile.KEY_POUND;
 
 
-				// F4 - Quit
-				case -1: System.exit(0);
+                // Inverted Num Pad
+                case 0x40000059:
+                    return Mobile.KEY_NUM7; // SDLK_KP_1
+                case 0x4000005A:
+                    return Mobile.KEY_NUM8; // SDLK_KP_2
+                case 0x4000005B:
+                    return Mobile.KEY_NUM9; // SDLK_KP_3
+                case 0x4000005C:
+                    return Mobile.KEY_NUM4; // SDLK_KP_4
+                case 0x4000005D:
+                    return Mobile.KEY_NUM5; // SDLK_KP_5
+                case 0x4000005E:
+                    return Mobile.KEY_NUM6; // SDLK_KP_6
+                case 0x4000005F:
+                    return Mobile.KEY_NUM1; // SDLK_KP_7
+                case 0x40000060:
+                    return Mobile.KEY_NUM2; // SDLK_KP_8
+                case 0x40000061:
+                    return Mobile.KEY_NUM3; // SDLK_KP_9
+                case 0x40000062:
+                    return Mobile.KEY_NUM0; // SDLK_KP_0
 
-				// ESC - Quit
-				case 0x1B: System.exit(0);
 
-				case 112: ScreenShot.takeScreenshot(true);
+                // F4 - Quit
+                case -1:
+                    System.exit(0);
+
+                    // ESC - Quit
+                case 0x1B:
+                    System.exit(0);
+
+                case 112:
+                    ScreenShot.takeScreenshot(true, mobile);
 
 				/*
 				case : return Mobile.GAME_UP;
@@ -302,40 +316,48 @@ public class Anbu
 				case : return Mobile.NOKIA_SOFT2;
 				case : return Mobile.NOKIA_SOFT3;
 				*/
-			}
-			return 0;
-		}
+            }
+            return 0;
+        }
 
-		private int getMobileKeyPad(int keycode)
-		{
-			switch(keycode)
-			{
-				//  A:1 B:0 X: 3 Y:2 L:4 R:5 St:6 Sl:7
-				case 0x03: return Mobile.KEY_NUM0;
-				case 0x02: return Mobile.KEY_NUM5;
-				case 0x00: return Mobile.KEY_STAR;
-				case 0x01: return Mobile.KEY_POUND;
+        private int getMobileKeyPad(int keycode) {
+            switch (keycode) {
+                //  A:1 B:0 X: 3 Y:2 L:4 R:5 St:6 Sl:7
+                case 0x03:
+                    return Mobile.KEY_NUM0;
+                case 0x02:
+                    return Mobile.KEY_NUM5;
+                case 0x00:
+                    return Mobile.KEY_STAR;
+                case 0x01:
+                    return Mobile.KEY_POUND;
 
-				case 0x04: return Mobile.KEY_NUM1;
-				case 0x05: return Mobile.KEY_NUM3;
+                case 0x04:
+                    return Mobile.KEY_NUM1;
+                case 0x05:
+                    return Mobile.KEY_NUM3;
 
-				case 0x06: return Mobile.NOKIA_SOFT1;
-				case 0x07: return Mobile.NOKIA_SOFT2;
-			}
-			return 0;
-		}
+                case 0x06:
+                    return Mobile.NOKIA_SOFT1;
+                case 0x07:
+                    return Mobile.NOKIA_SOFT2;
+            }
+            return 0;
+        }
 
-		private int getMobileKeyJoy(int keycode)
-		{
-			switch(keycode)
-			{
-				case 0x04: return Mobile.KEY_NUM2;
-				case 0x01: return Mobile.KEY_NUM4;
-				case 0x02: return Mobile.KEY_NUM6;
-				case 0x08: return Mobile.KEY_NUM8;
-			}
-			return 0;
-		}
+        private int getMobileKeyJoy(int keycode) {
+            switch (keycode) {
+                case 0x04:
+                    return Mobile.KEY_NUM2;
+                case 0x01:
+                    return Mobile.KEY_NUM4;
+                case 0x02:
+                    return Mobile.KEY_NUM6;
+                case 0x08:
+                    return Mobile.KEY_NUM8;
+            }
+            return 0;
+        }
 
-	} // sdl
+    } // sdl
 }

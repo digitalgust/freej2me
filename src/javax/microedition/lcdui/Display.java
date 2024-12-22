@@ -26,6 +26,7 @@ import java.util.Vector;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 
 public class Display
@@ -55,7 +56,7 @@ public class Display
 	{
 		display = this;
 
-		Mobile.setDisplay(this);
+		FreeJ2ME.getMobile().setDisplay(this);
 
 		serialCalls = new Vector<Runnable>(16);
 		timer = new Timer();
@@ -89,16 +90,16 @@ public class Display
 	{
 		switch(imageType)
 		{
-			case LIST_ELEMENT: return Mobile.getPlatform().lcdHeight / 8;
-			case CHOICE_GROUP_ELEMENT: return Mobile.getPlatform().lcdHeight / 8;
-			case ALERT: return Mobile.getPlatform().lcdHeight;
+			case LIST_ELEMENT: return FreeJ2ME.getMobile().getPlatform().lcdHeight / 8;
+			case CHOICE_GROUP_ELEMENT: return FreeJ2ME.getMobile().getPlatform().lcdHeight / 8;
+			case ALERT: return FreeJ2ME.getMobile().getPlatform().lcdHeight;
 		}
-		return Mobile.getPlatform().lcdHeight;
+		return FreeJ2ME.getMobile().getPlatform().lcdHeight;
 	}
 
 	public int getBestImageWidth(int imageType)
 	{
-		return Mobile.getPlatform().lcdWidth;
+		return FreeJ2ME.getMobile().getPlatform().lcdWidth;
 	}
 
 	public int getBorderStyle(boolean highlighted) { return 0; }
@@ -135,7 +136,7 @@ public class Display
 			next.showNotify();
 			current = next;
 			current.notifySetCurrent();
-			Mobile.getPlatform().flushGraphics(current.platformImage, 0,0, current.width, current.height);
+			FreeJ2ME.getMobile().getPlatform().flushGraphics(current.platformImage, 0,0, current.width, current.height);
 			//System.out.println("Set Current "+current.width+", "+current.height);
 		}
 		catch (Exception e)

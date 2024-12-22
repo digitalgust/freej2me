@@ -18,6 +18,7 @@ package com.mascotcapsule.micro3d.v3;
 
 import java.io.IOException;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 
 public class ActionTable
@@ -44,7 +45,7 @@ public class ActionTable
 	public ActionTable(String name) throws IOException
 	{
 		System.out.println("Action Table "+name);
-		rawdata = Mobile.getPlatform().loader.getMIDletResourceAsByteArray(name);
+		rawdata = FreeJ2ME.getMobile().getPlatform().loader.getMIDletResourceAsByteArray(name);
 
 		numFrames = 1;
 		numActions = 1;

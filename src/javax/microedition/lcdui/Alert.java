@@ -18,6 +18,7 @@ package javax.microedition.lcdui;
 
 import java.util.ArrayList;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 
 
@@ -124,7 +125,7 @@ public class Alert extends Screen
 	{
 		public void commandAction(Command cmd, Displayable next)
 		{
-			Mobile.getDisplay().setCurrent(next);
+			FreeJ2ME.getMobile().getDisplay().setCurrent(next);
 		}
 	};
 

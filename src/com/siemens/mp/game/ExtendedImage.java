@@ -17,6 +17,7 @@
 
 package com.siemens.mp.game;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 import org.recompile.mobile.PlatformGraphics;
@@ -72,6 +73,6 @@ public class ExtendedImage extends com.siemens.mp.misc.NativeMem
 
 	public void blitToScreen(int x, int y) // from Micro Java Game Development By David Fox, Roman Verhovsek
 	{
-		Mobile.getPlatform().flushGraphics(image, x, y, width, height);
+		FreeJ2ME.getMobile().getPlatform().flushGraphics(image, x, y, width, height);
 	} 
 }

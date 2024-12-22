@@ -57,15 +57,18 @@ public class MobilePlatform
 
 	java.awt.Frame inputFrame;
 
-	public MobilePlatform(int width, int height)
+	Mobile mobile;
+
+	public MobilePlatform(int width, int height, Mobile mobile)
 	{
+		this.mobile = mobile;
 		lcdWidth = width;
 		lcdHeight = height;
 
 		lcd = new PlatformImage(width, height);
 		gc = lcd.getGraphics();
 
-		Mobile.setGraphics3D(new Graphics3D());
+		mobile.setGraphics3D(new Graphics3D());
 
 		painter = new Runnable()
 		{
@@ -98,38 +101,38 @@ public class MobilePlatform
 	public void keyPressed(int keycode)
 	{
 		updateKeyState(keycode, 1);
-		Mobile.getDisplay().getCurrent().keyPressed(keycode);
+		mobile.getDisplay().getCurrent().keyPressed(keycode);
 	}
 
 	public void keyReleased(int keycode)
 	{
 		updateKeyState(keycode, 0);
-		Mobile.getDisplay().getCurrent().keyReleased(keycode);
+		mobile.getDisplay().getCurrent().keyReleased(keycode);
 	}
 
 	public void keyRepeated(int keycode)
 	{
-		Mobile.getDisplay().getCurrent().keyRepeated(keycode);
+		mobile.getDisplay().getCurrent().keyRepeated(keycode);
 	}
 
 	public void pointerDragged(int x, int y)
 	{
-		if (Mobile.getDisplay() != null && Mobile.getDisplay().getCurrent() != null) {
-			Mobile.getDisplay().getCurrent().pointerDragged(x, y);
+		if (mobile.getDisplay() != null && mobile.getDisplay().getCurrent() != null) {
+			mobile.getDisplay().getCurrent().pointerDragged(x, y);
 		}
 	}
 
 	public void pointerPressed(int x, int y)
 	{
-		if (Mobile.getDisplay() != null && Mobile.getDisplay().getCurrent() != null) {
-			Mobile.getDisplay().getCurrent().pointerPressed(x, y);
+		if (mobile.getDisplay() != null && mobile.getDisplay().getCurrent() != null) {
+			mobile.getDisplay().getCurrent().pointerPressed(x, y);
 		}
 	}
 
 	public void pointerReleased(int x, int y)
 	{
-		if (Mobile.getDisplay() != null && Mobile.getDisplay().getCurrent() != null) {
-			Mobile.getDisplay().getCurrent().pointerReleased(x, y);
+		if (mobile.getDisplay() != null && mobile.getDisplay().getCurrent() != null) {
+			mobile.getDisplay().getCurrent().pointerReleased(x, y);
 		}
 	}
 
@@ -182,7 +185,7 @@ public class MobilePlatform
 	{
 		try
 		{
-			loader.start();
+			loader.start(mobile);
 		}
 		catch (Exception e)
 		{
@@ -283,7 +286,7 @@ public class MobilePlatform
                     textField.setString(s);
                     closeWindow();
                 }
-                Mobile.getDisplay().getCurrent().render();
+				mobile.getDisplay().getCurrent().render();
             }
 
             @Override

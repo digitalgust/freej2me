@@ -16,6 +16,8 @@
 */
 package org.recompile.mobile;
 
+import org.recompile.freej2me.FreeJ2ME;
+
 import java.awt.*;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
@@ -72,7 +74,7 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		// System.out.println("Image From Resource Name");
 		BufferedImage temp;
 
-		InputStream stream = Mobile.getPlatform().loader.getMIDletResourceAsStream(name);
+		InputStream stream = FreeJ2ME.getMobile().getPlatform().loader.getMIDletResourceAsStream(name);
 
 		if(stream==null)
 		{
@@ -161,11 +163,11 @@ public class PlatformImage extends javax.microedition.lcdui.Image
 		}
 		catch(Exception e)
 		{
-			System.out.println("Couldn't Load Image Data From Byte Array");
-			canvas = new BufferedImage(Mobile.getPlatform().lcdWidth, Mobile.getPlatform().lcdHeight, BufferedImage.TYPE_INT_ARGB);
-			createGraphics();
-			//System.out.println(e.getMessage());
-			//e.printStackTrace();
+//			System.out.println("Couldn't Load Image Data From Byte Array");
+//			canvas = new BufferedImage(Mobile.getPlatform().lcdWidth, Mobile.getPlatform().lcdHeight, BufferedImage.TYPE_INT_ARGB);
+//			createGraphics();
+//			//System.out.println(e.getMessage());
+			e.printStackTrace();
 			isNull = true;
 		}
 

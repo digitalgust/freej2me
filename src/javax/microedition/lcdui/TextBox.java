@@ -17,6 +17,7 @@
 package javax.microedition.lcdui;
 
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformGraphics;
 import org.recompile.mobile.PlatformImage;
@@ -144,8 +145,8 @@ public class TextBox extends Screen
 
 	protected void doDefaultCommand() {
 
-        if (Mobile.getPlatform().getInputFrame() == null) {
-            Mobile.getPlatform().openInputFrame(null, this, text);
+        if (FreeJ2ME.getMobile().getPlatform().getInputFrame() == null) {
+            FreeJ2ME.getMobile().getPlatform().openInputFrame(null, this, text);
         }
     }
 
@@ -200,7 +201,7 @@ public class TextBox extends Screen
         }
         if (this.getDisplay().getCurrent() == this)
 		{
-			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
 		}
 	}
 }

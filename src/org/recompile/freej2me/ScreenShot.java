@@ -30,7 +30,7 @@ import java.nio.file.Path;
 
 public class ScreenShot
 {
-	public static void takeScreenshot(boolean saveToHomeDir)
+	public static void takeScreenshot(boolean saveToHomeDir, Mobile mobile)
 	{
 		try
 		{
@@ -45,7 +45,7 @@ public class ScreenShot
 			}
 			else
 			{
-				String screenshotPath = Mobile.getPlatform().dataPath + "screenshots";
+				String screenshotPath = mobile.getPlatform().dataPath + "screenshots";
 				try
 				{
 					Files.createDirectories(Paths.get(screenshotPath));
@@ -60,7 +60,7 @@ public class ScreenShot
 			}
 
 			File outputfile = new File(fileName);
-			ImageIO.write(Mobile.getPlatform().getLCD(), "png", outputfile);
+			ImageIO.write(mobile.getPlatform().getLCD(), "png", outputfile);
 			System.out.printf("Saved screenshot: %s\n", outputfile.toString());
 		}
 		catch (Exception e)

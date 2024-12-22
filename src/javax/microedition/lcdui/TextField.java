@@ -17,6 +17,7 @@
 package javax.microedition.lcdui;
 
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.MobilePlatform;
 import org.recompile.mobile.PlatformGraphics;
@@ -120,7 +121,7 @@ public class TextField extends Item {
     }
 
     protected void doActive() {
-        Mobile.getPlatform().openInputFrame(this, null, text);
+        FreeJ2ME.getMobile().getPlatform().openInputFrame(this, null, text);
     }
 
     protected void render(PlatformGraphics gc, int x, int y, int w, int h) {

@@ -16,6 +16,7 @@
 */
 package javax.microedition.lcdui;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 import org.recompile.mobile.PlatformGraphics;
@@ -63,9 +64,9 @@ public class Form extends Screen
 
 	public Item get(int itemNum) { return items.get(itemNum); }
 
-	public int getHeight() { return Mobile.getPlatform().lcdHeight; }
+	public int getHeight() { return FreeJ2ME.getMobile().getPlatform().lcdHeight; }
 
-	public int getWidth() { return Mobile.getPlatform().lcdWidth; }
+	public int getWidth() { return FreeJ2ME.getMobile().getPlatform().lcdWidth; }
 
 	public void insert(int itemNum, Item item) { items.add(itemNum, item); render(); }
 

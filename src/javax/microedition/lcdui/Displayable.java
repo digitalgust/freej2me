@@ -18,6 +18,7 @@ package javax.microedition.lcdui;
 
 import java.util.ArrayList;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 import org.recompile.mobile.PlatformGraphics;
@@ -56,8 +57,8 @@ public abstract class Displayable
 
 	public Displayable()
 	{
-		width = Mobile.getPlatform().lcdWidth;
-		height = Mobile.getPlatform().lcdHeight;
+		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 	}
 
 	public void addCommand(Command cmd)
@@ -92,7 +93,7 @@ public abstract class Displayable
 
 	protected void sizeChanged(int width, int height) { }
 
-	public Display getDisplay() { return Mobile.getDisplay(); }
+	public Display getDisplay() { return FreeJ2ME.getMobile().getDisplay(); }
 
 	public ArrayList<Command> getCommands() { return commands; }
 
@@ -209,7 +210,7 @@ public abstract class Displayable
 
 		if(this.getDisplay().getCurrent() == this)
 		{
-			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
 		}
 	}
 
@@ -265,7 +266,7 @@ public abstract class Displayable
 
 		if(this.getDisplay().getCurrent() == this)
 		{
-			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
 		}
 	}
 

@@ -16,6 +16,7 @@
 */
 package javax.microedition.lcdui;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 import org.recompile.mobile.PlatformGraphics;
@@ -49,8 +50,8 @@ public abstract class Canvas extends Displayable
 
 	protected Canvas()
 	{
-		width = Mobile.getPlatform().lcdWidth;
-		height = Mobile.getPlatform().lcdHeight;
+		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 
 		System.out.println("Create Canvas:"+width+", "+height);
 
@@ -160,11 +161,11 @@ public abstract class Canvas extends Displayable
 		PlatformGraphics graphics;
 		try
 		{
-            if (Mobile.getDisplay().getCurrent() == this) {
+            if (FreeJ2ME.getMobile().getDisplay().getCurrent() == this) {
                 graphics = platformImage.getGraphics();
                 graphics.reset();
 				paint(graphics);
-                Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+                FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
             }
         }
 		catch (Exception e)
@@ -179,15 +180,15 @@ public abstract class Canvas extends Displayable
 		PlatformGraphics graphics = platformImage.getGraphics();
 		graphics.reset();
 		paint(graphics);
-		if(Mobile.getDisplay().getCurrent() == this)
+		if(FreeJ2ME.getMobile().getDisplay().getCurrent() == this)
 		{
-			Mobile.getPlatform().repaint(platformImage, x, y, width, height);
+			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, x, y, width, height);
 		}
 	}
 
 	public void serviceRepaints() {
-		if (Mobile.getDisplay().getCurrent() == this) {
-			Mobile.getPlatform().repaint(platformImage, 0, 0, width, height);
+		if (FreeJ2ME.getMobile().getDisplay().getCurrent() == this) {
+			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
 		}
 	}
 
@@ -197,8 +198,8 @@ public abstract class Canvas extends Displayable
 		fullScreen = mode;
 		if(fullScreen)
 		{
-			width = Mobile.getPlatform().lcdWidth;
-			height = Mobile.getPlatform().lcdHeight;
+			width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+			height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 		}
 	}
 

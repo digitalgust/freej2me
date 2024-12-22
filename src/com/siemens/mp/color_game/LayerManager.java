@@ -23,6 +23,7 @@ import java.util.Vector;
 import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.Graphics;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformGraphics;
 
@@ -34,8 +35,8 @@ public class LayerManager extends javax.microedition.lcdui.game.LayerManager
 	{
 		layers = new Vector<Layer>();
 
-		width = Mobile.getPlatform().lcdWidth;
-		height = Mobile.getPlatform().lcdHeight;
+		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 
 		canvas = Image.createImage(width, height);
 		gc = canvas.platformImage.getGraphics();

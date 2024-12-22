@@ -56,10 +56,13 @@ public class Config
 
 	HashMap<String, String> settings = new HashMap<String, String>(4);
 
-	public Config()
+	Mobile mobile;
+
+	public Config(Mobile mobile)
 	{
-		width = Mobile.getPlatform().lcdWidth;
-		height = Mobile.getPlatform().lcdHeight;
+		this.mobile = mobile;
+		width = mobile.getPlatform().lcdWidth;
+		height = mobile.getPlatform().lcdHeight;
 
 		lcd = new PlatformImage(width, height);
 		gc = lcd.getGraphics();
@@ -85,8 +88,8 @@ public class Config
 
 	public void init()
 	{
-		String appname = Mobile.getPlatform().loader.suitename;
-		configPath = Mobile.getPlatform().dataPath + "./config/"+appname;
+		String appname = mobile.getPlatform().loader.suitename;
+		configPath = mobile.getPlatform().dataPath + "./config/"+appname;
 		configFile = configPath + "/game.conf";
 		// Load Config //
 		try
@@ -194,13 +197,13 @@ public class Config
 	{
 		isRunning = true;
 		render();
-		Mobile.getPlatform().painter.run();
+		mobile.getPlatform().painter.run();
 	}
 
 	public void stop()
 	{
 		isRunning = false;
-		Mobile.getPlatform().painter.run();
+		mobile.getPlatform().painter.run();
 	}
 
 	public void keyPressed(int key)
@@ -333,7 +336,7 @@ public class Config
 			}
 		}
 
-		Mobile.getPlatform().painter.run();
+		mobile.getPlatform().painter.run();
 	}
 
 	private void doMenuAction()

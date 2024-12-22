@@ -20,6 +20,7 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Graphics;
 
+import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 
@@ -41,8 +42,8 @@ public abstract class GameCanvas extends Canvas
 	{
 		this.suppressKeyEvents = suppressKeyEvents;
 
-		width = Mobile.getPlatform().lcdWidth;
-		height = Mobile.getPlatform().lcdHeight;
+		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 
 		platformImage = new PlatformImage(width, height);
 	}
@@ -56,7 +57,7 @@ public abstract class GameCanvas extends Canvas
 
 	public void flushGraphics(int x, int y, int width, int height)
 	{
-		Mobile.getPlatform().flushGraphics(platformImage, x, y, width, height);
+		FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, x, y, width, height);
 	}
 
 	public void flushGraphics()
@@ -66,8 +67,8 @@ public abstract class GameCanvas extends Canvas
 
 	public int getKeyStates() // found in use
 	{
-		int t = Mobile.getPlatform().keyState;
-		Mobile.getPlatform().keyState = 0;
+		int t = FreeJ2ME.getMobile().getPlatform().keyState;
+		FreeJ2ME.getMobile().getPlatform().keyState = 0;
 		return t;
 	}
 }

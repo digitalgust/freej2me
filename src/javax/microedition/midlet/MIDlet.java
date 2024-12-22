@@ -16,13 +16,11 @@
 */
 package javax.microedition.midlet;
 
+import org.recompile.freej2me.FreeJ2ME;
+
 import java.util.HashMap;
 
-import javax.microedition.io.*;
 import javax.microedition.lcdui.*;
-import javax.microedition.lcdui.game.*;
-import javax.microedition.pki.*;
-import javax.microedition.rms.*;
 
 public abstract class MIDlet
 {
@@ -57,9 +55,18 @@ public abstract class MIDlet
 	}
 
 	public final void notifyDestroyed()
-	{ 
+	{
 		System.out.println("MIDlet sent Destroyed Notification");
-		System.exit(0);
+		//System.exit(0);
+		FreeJ2ME.getMobile().notifyDestroy();
+		ThreadGroup tg = Thread.currentThread().getThreadGroup();
+		int active = tg.activeCount();
+		Thread[] threads = new Thread[active];
+		tg.enumerate(threads);
+		for (Thread t : threads) {
+			t.interrupt();
+			System.out.println("Thread interrupted " + t);
+		}
 	}
 
 	public final void notifyPaused() { }

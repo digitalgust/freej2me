@@ -33,7 +33,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.net.URL;
 
-public class Libretro
+public class Libretro extends J2meLoader
 {
 	private int lcdWidth;
 	private int lcdHeight;
@@ -60,6 +60,8 @@ public class Libretro
 
 	LibretroIO lio;
 
+	Mobile mobile;
+
 	public static void main(String args[])
 	{
 		Libretro app = new Libretro();
@@ -73,9 +75,10 @@ public class Libretro
 		surface = new BufferedImage(lcdWidth, lcdHeight, BufferedImage.TYPE_INT_ARGB); // libretro display
 		gc = (Graphics2D)surface.getGraphics();
 
-		Mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight));
+		mobile = new Mobile(this);
+		mobile.setPlatform(new MobilePlatform(lcdWidth, lcdHeight, mobile));
 
-		config = new Config();
+		config = new Config(mobile);
 		config.onChange = new Runnable() { public void run() { settingsChanged(); } };
 
 		lio = new LibretroIO();
@@ -88,13 +91,13 @@ public class Libretro
 			{
 				try
 				{
-					gc.drawImage(Mobile.getPlatform().getLCD(), 0, 0, lcdWidth, lcdHeight, null);
+					gc.drawImage(mobile.getPlatform().getLCD(), 0, 0, lcdWidth, lcdHeight, null);
 				}
 				catch (Exception e) { }
 			}
 		};
 
-		Mobile.getPlatform().setPainter(painter);
+		mobile.getPlatform().setPainter(painter);
 
 		System.out.println("+READY");
 		System.out.flush();
@@ -181,11 +184,11 @@ public class Libretro
 									mousey = (din[3]<<8) | din[4];
 									if(!rotateDisplay)
 									{
-										Mobile.getPlatform().pointerReleased(mousex, mousey);
+										mobile.getPlatform().pointerReleased(mousex, mousey);
 									}
 									else
 									{
-										Mobile.getPlatform().pointerReleased(lcdWidth-mousey, mousex);
+										mobile.getPlatform().pointerReleased(lcdWidth-mousey, mousex);
 									}
 								break;
 
@@ -194,11 +197,11 @@ public class Libretro
 									mousey = (din[3]<<8) | din[4];
 									if(!rotateDisplay)
 									{
-										Mobile.getPlatform().pointerPressed(mousex, mousey);
+										mobile.getPlatform().pointerPressed(mousex, mousey);
 									}
 									else
 									{
-										Mobile.getPlatform().pointerPressed(lcdWidth-mousey, mousex);
+										mobile.getPlatform().pointerPressed(lcdWidth-mousey, mousex);
 									}
 								break;
 
@@ -207,11 +210,11 @@ public class Libretro
 									mousey = (din[3]<<8) | din[4];
 									if(!rotateDisplay)
 									{
-										Mobile.getPlatform().pointerDragged(mousex, mousey);
+										mobile.getPlatform().pointerDragged(mousex, mousey);
 									}
 									else
 									{
-										Mobile.getPlatform().pointerDragged(lcdWidth-mousey, mousex);
+										mobile.getPlatform().pointerDragged(lcdWidth-mousey, mousex);
 									}
 								break;
 
@@ -223,14 +226,14 @@ public class Libretro
 										path.append((char)bin);
 									}
 									url = (new File(path.toString())).toURI().toURL();
-									if(Mobile.getPlatform().loadJar(url.toString()))
+									if(mobile.getPlatform().loadJar(url.toString()))
 									{
 										// Check config
 										config.init();
 										settingsChanged();
 
 										// Run jar
-										Mobile.getPlatform().runJar();
+										mobile.getPlatform().runJar();
 									}
 									else
 									{
@@ -246,7 +249,7 @@ public class Libretro
 										bin = System.in.read();
 										path.append((char)bin);
 									}
-									Mobile.getPlatform().dataPath = path.toString();
+									mobile.getPlatform().dataPath = path.toString();
 								break;
 
 								case 15:
@@ -312,19 +315,19 @@ public class Libretro
 		if(limitFPS>0) { limitFPS = 1000 / limitFPS; }
 
 		String sound = config.settings.get("sound");
-		Mobile.sound = false;
-		if(sound.equals("on")) { Mobile.sound = true; }
+		mobile.sound = false;
+		if(sound.equals("on")) { mobile.sound = true; }
 
 		String phone = config.settings.get("phone");
 		useNokiaControls = false;
 		useSiemensControls = false;
 		useMotorolaControls = false;
-		Mobile.nokia = false;
-		Mobile.siemens = false;
-		Mobile.motorola = false;
-		if(phone.equals("Nokia")) { Mobile.nokia = true; useNokiaControls = true; }
-		if(phone.equals("Siemens")) { Mobile.siemens = true; useSiemensControls = true; }
-		if(phone.equals("Motorola")) { Mobile.motorola = true; useMotorolaControls = true; }
+		mobile.nokia = false;
+		mobile.siemens = false;
+		mobile.motorola = false;
+		if(phone.equals("Nokia")) { mobile.nokia = true; useNokiaControls = true; }
+		if(phone.equals("Siemens")) { mobile.siemens = true; useSiemensControls = true; }
+		if(phone.equals("Motorola")) { mobile.motorola = true; useMotorolaControls = true; }
 
 		String rotate = config.settings.get("rotate");
 		if(rotate.equals("on")) { rotateDisplay = true; frameHeader[5] = (byte)1; }
@@ -335,7 +338,7 @@ public class Libretro
 		{
 			lcdWidth = w;
 			lcdHeight = h;
-			Mobile.getPlatform().resizeLCD(w, h);
+			mobile.getPlatform().resizeLCD(w, h);
 			surface = new BufferedImage(lcdWidth, lcdHeight, BufferedImage.TYPE_INT_ARGB); // libretro display
 			gc = (Graphics2D)surface.getGraphics();
 		}
@@ -352,11 +355,11 @@ public class Libretro
 		{
 			if (pressedKeys[mobikeyN] == false)
 			{
-				Mobile.getPlatform().keyPressed(key);
+				mobile.getPlatform().keyPressed(key);
 			}
 			else
 			{
-				Mobile.getPlatform().keyRepeated(key);
+				mobile.getPlatform().keyRepeated(key);
 			}
 		}
 		pressedKeys[mobikeyN] = true;
@@ -367,7 +370,7 @@ public class Libretro
 		int mobikeyN = (key + 64) & 0x7F; //Normalized value for indexing the pressedKeys array
 		if(!config.isRunning)
 		{
-			Mobile.getPlatform().keyReleased(key);
+			mobile.getPlatform().keyReleased(key);
 		}
 		pressedKeys[mobikeyN] = false;
 	}
