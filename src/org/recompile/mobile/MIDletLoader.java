@@ -22,17 +22,12 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import java.lang.ClassLoader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -45,9 +40,7 @@ import org.objectweb.asm.MethodAdapter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
-import javax.microedition.lcdui.*;
 import javax.microedition.midlet.*;
-import javax.microedition.io.*;
 import javax.microedition.midlet.MIDletStateChangeException;
 
 public class MIDletLoader extends URLClassLoader
@@ -235,6 +228,11 @@ public class MIDletLoader extends URLClassLoader
 			System.out.println("Can't Read Jar Manifest!");
 			e.printStackTrace();
 		}
+	}
+
+	public String getMidletProperty(String key) {
+		String s = properties.get(key);
+		return s == null ? "" : s;
 	}
 
 

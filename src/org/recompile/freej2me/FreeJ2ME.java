@@ -24,7 +24,6 @@ import org.recompile.mobile.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FilenameFilter;
 import javax.imageio.ImageIO;
@@ -59,7 +58,7 @@ public class FreeJ2ME
 
 	public FreeJ2ME(String args[])
 	{
-		main = new Frame("FreeJ2ME");
+		main = new Frame("");
 		main.setSize(350,450);
 		main.setBackground(new Color(0,0,64));
 		try
@@ -301,6 +300,7 @@ public class FreeJ2ME
 
 			settingsChanged();
 
+			main.setTitle(Mobile.getPlatform().loader.getMidletProperty("MIDlet-Name"));
 			Mobile.getPlatform().runJar();
 		}
 		else
