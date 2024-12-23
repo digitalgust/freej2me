@@ -22,63 +22,66 @@ import java.util.HashMap;
 
 import javax.microedition.lcdui.*;
 
-public abstract class MIDlet
-{
+public abstract class MIDlet {
 
-	public static HashMap<String, String> properties;
+    public static HashMap<String, String> properties;
 
-	private Display display = new Display();
+    private Display display = new Display();
 
-	protected MIDlet()
-	{
-		System.out.println("Create MIDlet");
-	}
+    protected MIDlet() {
+        System.out.println("Create MIDlet");
+    }
 
 
-	public final int checkPermission(String permission)
-	{
-		// 0 - denied; 1 - allowed; -1 unknown
-		System.out.println("checkPermission: "+permission);
-		return -1;
-	}
+    public final int checkPermission(String permission) {
+        // 0 - denied; 1 - allowed; -1 unknown
+        System.out.println("checkPermission: " + permission);
+        return -1;
+    }
 
-	protected abstract void destroyApp(boolean unconditional) throws MIDletStateChangeException;
+    protected abstract void destroyApp(boolean unconditional) throws MIDletStateChangeException;
 
-	public String getAppProperty(String key)
-	{ 
-		return properties.get(key);
-	}
+    public String getAppProperty(String key) {
+        return properties.get(key);
+    }
 
-	public static void initAppProperties(HashMap<String, String> initProperties)
-	{
-		properties = initProperties;
-	}
+    public static void initAppProperties(HashMap<String, String> initProperties) {
+        properties = initProperties;
+    }
 
-	public final void notifyDestroyed()
-	{
-		System.out.println("MIDlet sent Destroyed Notification");
-		//System.exit(0);
-		FreeJ2ME.getMobile().notifyDestroy();
-		ThreadGroup tg = Thread.currentThread().getThreadGroup();
-		int active = tg.activeCount();
-		Thread[] threads = new Thread[active];
-		tg.enumerate(threads);
-		for (Thread t : threads) {
-			t.interrupt();
-			System.out.println("Thread interrupted " + t);
-		}
-	}
+    public final void notifyDestroyed() {
+        System.out.println("MIDlet sent Destroyed Notification");
+        //System.exit(0);
+        FreeJ2ME.getMobile().notifyDestroy();
+        ThreadGroup tg = Thread.currentThread().getThreadGroup();
+        int active = tg.activeCount();
+        Thread[] threads = new Thread[active];
+        tg.enumerate(threads);
+        for (Thread t : threads) {
+            if (t == Thread.currentThread()) continue; // skip current thread
+            System.out.println("Thread interrupted " + t);
+            t.interrupt();
+        }
+        //自己最后销毁，要不然上面的for都执行不完
+        Thread.currentThread().interrupt();
+    }
 
-	public final void notifyPaused() { }
+    public final void notifyPaused() {
+    }
 
-	protected abstract void pauseApp();
+    protected abstract void pauseApp();
 
-	public final boolean platformRequest(String URL) { return false; }
+    public final boolean platformRequest(String URL) {
+        return false;
+    }
 
-	public final void resumeRequest() { }
+    public final void resumeRequest() {
+    }
 
-	protected abstract void startApp() throws MIDletStateChangeException;
+    protected abstract void startApp() throws MIDletStateChangeException;
 
-	public Display getDisplay() { return display; }
+    public Display getDisplay() {
+        return display;
+    }
 
 }

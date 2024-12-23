@@ -70,6 +70,8 @@ public class FreeJ2ME extends J2meLoader {
 
     final java.util.List<ComponentEvent> events = Collections.synchronizedList(new ArrayList<>());
 
+    boolean exit = false;
+
     public FreeJ2ME(String args[]) {
         this.args = args;
         ThreadGroup tg = new ThreadGroup("threadgroup-" + this.toString());
@@ -271,7 +273,7 @@ public class FreeJ2ME extends J2meLoader {
      * 处理事件
      */
     void processEvent() {
-        while (true) {
+        while (!exit) {
             if (events.isEmpty()) {
                 synchronized (events) {
                     try {
@@ -702,6 +704,7 @@ public class FreeJ2ME extends J2meLoader {
     }
 
     public void notifyDestroy() {
+        exit = true;
         if (j2meframe != null) {
             j2meframe.setVisible(false);
             j2meframe.dispose();

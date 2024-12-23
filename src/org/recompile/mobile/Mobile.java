@@ -148,7 +148,14 @@ public class Mobile {
     }
 
     public void notifyDestroy() {
-        if (j2me != null) j2me.notifyDestroy();
-        if (platform.inputFrame != null) platform.inputFrame.dispose();
+        if (display != null) {
+            display.destroy();
+        }
+        if (platform.inputFrame != null) {
+            platform.inputFrame.dispose();
+        }
+        if (j2me != null) {
+            j2me.notifyDestroy();
+        }
     }
 }

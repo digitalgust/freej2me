@@ -29,143 +29,151 @@ import java.util.TimerTask;
 import org.recompile.freej2me.FreeJ2ME;
 import org.recompile.mobile.Mobile;
 
-public class Display
-{
-	public static final int LIST_ELEMENT = 1;
-	public static final int CHOICE_GROUP_ELEMENT = 2;
-	public static final int ALERT = 3;
-	public static final int COLOR_BACKGROUND = 0;
-	public static final int COLOR_FOREGROUND = 1;
-	public static final int COLOR_HIGHLIGHTED_BACKGROUND = 2;
-	public static final int COLOR_HIGHLIGHTED_FOREGROUND = 3;
-	public static final int COLOR_BORDER = 4;
-	public static final int COLOR_HIGHLIGHTED_BORDER = 5;
+public class Display {
+    public static final int LIST_ELEMENT = 1;
+    public static final int CHOICE_GROUP_ELEMENT = 2;
+    public static final int ALERT = 3;
+    public static final int COLOR_BACKGROUND = 0;
+    public static final int COLOR_FOREGROUND = 1;
+    public static final int COLOR_HIGHLIGHTED_BACKGROUND = 2;
+    public static final int COLOR_HIGHLIGHTED_FOREGROUND = 3;
+    public static final int COLOR_BORDER = 4;
+    public static final int COLOR_HIGHLIGHTED_BORDER = 5;
 
 
-	private Displayable current;
+    private Displayable current;
 
-	private static Display display;
+    private static Display display;
 
-	public Vector<Runnable> serialCalls;
+    public Vector<Runnable> serialCalls;
 
-	private Timer timer;
+    private Timer timer;
 
-	private SerialCallTimerTask timertask;
+    private SerialCallTimerTask timertask;
 
-	public Display()
-	{
-		display = this;
+    public Display() {
+        display = this;
 
-		FreeJ2ME.getMobile().setDisplay(this);
+        FreeJ2ME.getMobile().setDisplay(this);
 
-		serialCalls = new Vector<Runnable>(16);
-		timer = new Timer();
-		timertask = new SerialCallTimerTask();
-		timer.schedule(timertask, 0, 17);
-	}
+        serialCalls = new Vector<Runnable>(16);
+        timer = new Timer();
+        timertask = new SerialCallTimerTask();
+        timer.schedule(timertask, 0, 17);
+    }
 
-	public void callSerially(Runnable r)
-	{
-		serialCalls.add(r);
-	}
-	private class SerialCallTimerTask extends TimerTask
-	{
-		public void run()
-		{
-			if(!serialCalls.isEmpty())
-			{
-				try
-				{
-					serialCalls.get(0).run();
-					serialCalls.removeElement(0);
-				}
-				catch (Exception e) { }
-			}
-		}
-	}
+    public void callSerially(Runnable r) {
+        serialCalls.add(r);
+    }
 
-	public boolean flashBacklight(int duration) { return true; }
+    private class SerialCallTimerTask extends TimerTask {
+        public void run() {
+            if (!serialCalls.isEmpty()) {
+                try {
+                    serialCalls.get(0).run();
+                    serialCalls.removeElement(0);
+                } catch (Exception e) {
+                }
+            }
+        }
+    }
 
-	public int getBestImageHeight(int imageType)
-	{
-		switch(imageType)
-		{
-			case LIST_ELEMENT: return FreeJ2ME.getMobile().getPlatform().lcdHeight / 8;
-			case CHOICE_GROUP_ELEMENT: return FreeJ2ME.getMobile().getPlatform().lcdHeight / 8;
-			case ALERT: return FreeJ2ME.getMobile().getPlatform().lcdHeight;
-		}
-		return FreeJ2ME.getMobile().getPlatform().lcdHeight;
-	}
+    public boolean flashBacklight(int duration) {
+        return true;
+    }
 
-	public int getBestImageWidth(int imageType)
-	{
-		return FreeJ2ME.getMobile().getPlatform().lcdWidth;
-	}
+    public int getBestImageHeight(int imageType) {
+        switch (imageType) {
+            case LIST_ELEMENT:
+                return FreeJ2ME.getMobile().getPlatform().lcdHeight / 8;
+            case CHOICE_GROUP_ELEMENT:
+                return FreeJ2ME.getMobile().getPlatform().lcdHeight / 8;
+            case ALERT:
+                return FreeJ2ME.getMobile().getPlatform().lcdHeight;
+        }
+        return FreeJ2ME.getMobile().getPlatform().lcdHeight;
+    }
 
-	public int getBorderStyle(boolean highlighted) { return 0; }
+    public int getBestImageWidth(int imageType) {
+        return FreeJ2ME.getMobile().getPlatform().lcdWidth;
+    }
 
-	public int getColor(int colorSpecifier)
-	{
-		switch(colorSpecifier)
-		{
-			case COLOR_BACKGROUND: return 0;
-			case COLOR_FOREGROUND: return 0xFFFFFF;
-			case COLOR_HIGHLIGHTED_BACKGROUND: return 0xFFFFFF;
-			case COLOR_HIGHLIGHTED_FOREGROUND: return 0;
-			case COLOR_BORDER: return 0x808080;
-			case COLOR_HIGHLIGHTED_BORDER: return 0xFFFFFF;
-		}
-		return 0;
-	}
+    public int getBorderStyle(boolean highlighted) {
+        return 0;
+    }
 
-	public Displayable getCurrent() { return current; }
+    public int getColor(int colorSpecifier) {
+        switch (colorSpecifier) {
+            case COLOR_BACKGROUND:
+                return 0;
+            case COLOR_FOREGROUND:
+                return 0xFFFFFF;
+            case COLOR_HIGHLIGHTED_BACKGROUND:
+                return 0xFFFFFF;
+            case COLOR_HIGHLIGHTED_FOREGROUND:
+                return 0;
+            case COLOR_BORDER:
+                return 0x808080;
+            case COLOR_HIGHLIGHTED_BORDER:
+                return 0xFFFFFF;
+        }
+        return 0;
+    }
 
-	public static Display getDisplay(MIDlet m) { return display; }
+    public Displayable getCurrent() {
+        return current;
+    }
 
-	public boolean isColor() { return true; }
+    public static Display getDisplay(MIDlet m) {
+        return display;
+    }
 
-	public int numAlphaLevels() { return 256; }
+    public boolean isColor() {
+        return true;
+    }
 
-	public int numColors() { return 16777216; }
+    public int numAlphaLevels() {
+        return 256;
+    }
 
-	public void setCurrent(Displayable next)
-	{
-		try
-		{
-			if (next == null) return;
-			next.showNotify();
-			current = next;
-			current.notifySetCurrent();
-			FreeJ2ME.getMobile().getPlatform().flushGraphics(current.platformImage, 0,0, current.width, current.height);
-			//System.out.println("Set Current "+current.width+", "+current.height);
-		}
-		catch (Exception e)
-		{
-			System.out.println("Problem with setCurrent(next)");
-			e.printStackTrace();
-		}
-	}
+    public int numColors() {
+        return 16777216;
+    }
 
-	public void setCurrent(Alert alert, Displayable next)
-	{
-		try
-		{
-			setCurrent(alert);
-			alert.setNextScreen(next);
-		}
-		catch (Exception e)
-		{
-			System.out.println("Problem with setCurrent(alert, next)");
-			e.printStackTrace();
-		}
-	}
+    public void setCurrent(Displayable next) {
+        try {
+            if (next == null) return;
+            next.showNotify();
+            current = next;
+            current.notifySetCurrent();
+            FreeJ2ME.getMobile().getPlatform().flushGraphics(current.platformImage, 0, 0, current.width, current.height);
+            //System.out.println("Set Current "+current.width+", "+current.height);
+        } catch (Exception e) {
+            System.out.println("Problem with setCurrent(next)");
+            e.printStackTrace();
+        }
+    }
 
-	public void setCurrentItem(Item item) { System.out.println("Display.setCurrentItem"); }
+    public void setCurrent(Alert alert, Displayable next) {
+        try {
+            setCurrent(alert);
+            alert.setNextScreen(next);
+        } catch (Exception e) {
+            System.out.println("Problem with setCurrent(alert, next)");
+            e.printStackTrace();
+        }
+    }
 
-	public boolean vibrate(int duration)
-	{
-		//System.out.println("Vibrate");
-		return true;
-	}
+    public void setCurrentItem(Item item) {
+        System.out.println("Display.setCurrentItem");
+    }
 
+    public boolean vibrate(int duration) {
+        //System.out.println("Vibrate");
+        return true;
+    }
+
+    public void destroy() {
+        timer.cancel();
+    }
 }
