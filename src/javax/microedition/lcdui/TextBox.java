@@ -150,8 +150,8 @@ public class TextBox extends Screen
         }
     }
 
-	public void pointerPressed(int x, int y) {
-		super.pointerPressed(x, y);
+	public void pointerReleased(int x, int y) {
+		super.pointerReleased(x, y);
 		//
 
 		ArrayList<Command> cmds = getCombinedCommands();
@@ -164,7 +164,7 @@ public class TextBox extends Screen
 				return;
 			}
 		}
-		if (listCommands == false) {
+		if (!listCommands) {
 			if (options != null) {
 				if (options.isInRange(x, y)) {
 					listCommands = true;
@@ -184,8 +184,8 @@ public class TextBox extends Screen
 		}
 	}
 
-    public void pointerReleased(int x, int y) {
-        super.pointerReleased(x, y);
+    public void pointerPressed(int x, int y) {
+        super.pointerPressed(x, y);
     }
 	public void render()
 	{

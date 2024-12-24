@@ -93,7 +93,7 @@ public class List extends Screen implements Choice
 	
 	public int getSelectedFlags(boolean[] selectedArray_return) { return 0; }
 
-	public int getSelectedIndex() { return currentItem; }
+	public int getSelectedIndex() { return currentIndex; }
 
 	public String getString(int elementNum) { return ((StringItem)(items.get(elementNum))).getString(); }
 
@@ -124,7 +124,7 @@ public class List extends Screen implements Choice
 		render();
 	}
 
-	public boolean isSelected(int elementNum) { return elementNum==currentItem; }
+	public boolean isSelected(int elementNum) { return elementNum== currentIndex; }
 
 	// public void removeCommand(Command cmd) {  }
 
@@ -152,11 +152,11 @@ public class List extends Screen implements Choice
 	{
 		if(selected == true)
 		{
-			currentItem = elementNum;
+			currentIndex = elementNum;
 		}
 		else
 		{
-			currentItem = 0;
+			currentIndex = 0;
 		}
 		render();
 	}
@@ -178,15 +178,15 @@ public class List extends Screen implements Choice
 		{
 			//case Mobile.KEY_NUM2: currentItem--; break;
 			//case Mobile.KEY_NUM8: currentItem++; break;
-			case Mobile.NOKIA_UP: currentItem--; break;
-			case Mobile.NOKIA_DOWN: currentItem++; break;
+			case Mobile.NOKIA_UP: currentIndex--; break;
+			case Mobile.NOKIA_DOWN: currentIndex++; break;
 			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
 			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
 			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
 			//case Mobile.KEY_NUM5: doDefaultCommand(); break;
 		}
-		if (currentItem>=items.size()) { currentItem=0; }
-		if (currentItem<0) { currentItem = items.size()-1; }
+		if (currentIndex >=items.size()) { currentIndex =0; }
+		if (currentIndex <0) { currentIndex = items.size()-1; }
 		render();
 	}
 

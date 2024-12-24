@@ -23,364 +23,420 @@ import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 import org.recompile.mobile.PlatformGraphics;
 
-public abstract class Displayable
-{
-	final static int ITEM_H = 18;
+public abstract class Displayable {
+    final static int ITEM_H = 18;
 
-	public PlatformImage platformImage;
+    public PlatformImage platformImage;
 
-	public int width = 0;
+    public int width = 0;
 
-	public int height = 0;
+    public int height = 0;
 
-	public boolean fullScreen = false;
-	
-	protected String title = "";
+    public boolean fullScreen = false;
 
-	protected ArrayList<Command> commands = new ArrayList<Command>();
+    protected String title = "";
 
-	protected ArrayList<Item> items = new ArrayList<Item>();
-	//for save container(form) commands and item commands
-	protected ArrayList<Command> combinedCommands = new ArrayList<Command>();
+    protected ArrayList<Command> commands = new ArrayList<Command>();
 
-	protected CommandListener commandlistener;
+    protected ArrayList<Item> items = new ArrayList<Item>();
+    //for save container(form) commands and item commands
+    protected ArrayList<Command> combinedCommands = new ArrayList<Command>();
 
-	protected boolean listCommands = false;
-	
-	protected int currentCommand = 0;
+    protected CommandListener commandlistener;
 
-	protected int currentItem = -1;
+    protected boolean listCommands = false;
 
-	public Ticker ticker;
+    protected int currentCommand = 0;
 
-	protected Command options, optionsLeft, optionsRight;
+    protected int currentIndex = -1;
 
-	public Displayable()
-	{
-		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
-		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
-	}
+    public Ticker ticker;
 
-	public void addCommand(Command cmd)
-	{ 
-		try
-		{
-			commands.add(cmd);
-		}
-		catch (Exception e)
-		{
-			System.out.println("Problem Adding Command: "+e.getMessage());
-		}
-	}
+    protected Command options, optionsLeft, optionsRight;
 
-	public void removeCommand(Command cmd) { commands.remove(cmd); }
-	
-	public int getWidth() { return width; }
+    public Displayable() {
+        width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+        height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
+    }
 
-	public int getHeight() { return height; }
-	
-	public String getTitle() { return title; }
+    public void addCommand(Command cmd) {
+        try {
+            commands.add(cmd);
+        } catch (Exception e) {
+            System.out.println("Problem Adding Command: " + e.getMessage());
+        }
+    }
 
-	public void setTitle(String text) { title = text; }        
+    public void removeCommand(Command cmd) {
+        commands.remove(cmd);
+    }
 
-	public boolean isShown() { return true; }
+    public int getWidth() {
+        return width;
+    }
 
-	public Ticker getTicker() { return ticker; }
+    public int getHeight() {
+        return height;
+    }
 
-	public void setTicker(Ticker tick) { ticker = tick; }
-	
-	public void setCommandListener(CommandListener listener) { commandlistener = listener; }
+    public String getTitle() {
+        return title;
+    }
 
-	protected void sizeChanged(int width, int height) { }
+    public void setTitle(String text) {
+        title = text;
+    }
 
-	public Display getDisplay() { return FreeJ2ME.getMobile().getDisplay(); }
+    public boolean isShown() {
+        return true;
+    }
 
-	public ArrayList<Command> getCommands() { return commands; }
+    public Ticker getTicker() {
+        return ticker;
+    }
+
+    public void setTicker(Ticker tick) {
+        ticker = tick;
+    }
+
+    public void setCommandListener(CommandListener listener) {
+        commandlistener = listener;
+    }
+
+    protected void sizeChanged(int width, int height) {
+    }
+
+    public Display getDisplay() {
+        return FreeJ2ME.getMobile().getDisplay();
+    }
+
+    public ArrayList<Command> getCommands() {
+        return commands;
+    }
 
 
-	public void keyPressed(int key) { }
-	public void keyReleased(int key) { }
-	public void keyRepeated(int key) { }
-	public void pointerDragged(int x, int y) { }
-	public void pointerPressed(int x, int y) { }
-	public void pointerReleased(int x, int y) { }
-	public void showNotify() { }
-	public void hideNotify() { }
+    public void keyPressed(int key) {
+    }
 
-	public void notifySetCurrent() {
-		render();
-	}
+    public void keyReleased(int key) {
+    }
 
-	public void render()
-	{
-		if(listCommands==true)
-		{
-			renderCommands();
-		}
-		else
-		{
-			renderItems();
-		}
-	}
+    public void keyRepeated(int key) {
+    }
 
-	public void renderItems()
-	{
-		PlatformGraphics gc = platformImage.getGraphics();
-		// Draw Background:
-		gc.setColor(0xFFFFFF);
-		gc.fillRect(0,0,width,height);
-		gc.setColor(0x000000);
+    public void pointerDragged(int x, int y) {
+    }
 
-		// Draw Title:
-		gc.drawString(title, width/2, 2, Graphics.HCENTER);
-		gc.drawLine(0, 20, width, 20);
-		gc.drawLine(0, height-20, width, height-20);
+    public void pointerPressed(int x, int y) {
+    }
 
-		if(items.size()>0)
-		{
-			if(currentItem<0) { currentItem = 0; }
-			// Draw list items //
-			int ah = height - 50; // allowed height
-			int max = (int)Math.floor(ah / ITEM_H); // max items per page
-			if(items.size()<max) { max = items.size(); }
+    public void pointerReleased(int x, int y) {
+    }
 
-			int page = 0;
-			page = (int)Math.floor(currentItem/max); // current page
-			int first = page * max; // first item to show
-			int last = first + max - 1;
+    public void showNotify() {
+    }
 
-			if(last>=items.size()) { last = items.size()-1; }
-			
-			int y = 25;
-			for(int i=first; i<=last; i++)
-			{	
-				if(currentItem == i)
-				{
-					gc.fillRect(0, y, width, ITEM_H);
-					gc.setColor(0xFFFFFF);
-				}
-				Item item = items.get(i);
-				item.setBondle(0, y, getWidth(), ITEM_H);
-				item.render(gc, 0, y, getWidth(), ITEM_H);
+    public void hideNotify() {
+    }
 
-				gc.setColor(0x000000);
-				if (items.get(i) instanceof ImageItem) {
-					gc.drawImage(((ImageItem) items.get(i)).getImage(), width / 2, y, Graphics.HCENTER);
-				}
-				y+=ITEM_H;
-			}
-		}
+    public void notifySetCurrent() {
+        render();
+    }
 
-		combinAll();
+    public void render() {
+        if (listCommands) {
+            renderCommands();
+        } else {
+            renderItems();
+        }
+    }
 
-		if (combinedCommands.size() > 2) {
-			if (options == null) {
-				options = new Command("Options", Command.SCREEN, 0);
-				options.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
-				optionsLeft = new Command("Options", Command.SCREEN, 0);
-				optionsLeft.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
-				optionsRight = new Command("Options", Command.SCREEN, 0);
-				optionsRight.setBondle(width * 2 / 3, height - ITEM_H, width / 3, ITEM_H);
-			}
-		} else {
-			options = null;
-		}
+    public void renderItems() {
+        PlatformGraphics gc = platformImage.getGraphics();
+        // Draw Background:
+        gc.setColor(0xFFFFFF);
+        gc.fillRect(0, 0, width, height);
+        gc.setColor(0x000000);
 
-		// Draw Commands
-		switch(combinedCommands.size())
-		{
-			case 0: break;
-			case 1:
-				Command cmd = combinedCommands.get(0);
-				cmd.setBondle(0, height-ITEM_H, width/3, ITEM_H);
-				gc.drawString(combinedCommands.get(0).getLabel(), 3, height-ITEM_H, Graphics.LEFT);
-				gc.drawString(""+(currentItem+1)+" of "+items.size(), width-3, height-17, Graphics.RIGHT);
-				break;
-			case 2:
-				cmd = combinedCommands.get(0);
-				cmd.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
-				cmd = combinedCommands.get(1);
-				cmd.setBondle(width * 2 / 3, height - ITEM_H, width / 3, ITEM_H);
-				gc.drawString(combinedCommands.get(0).getLabel(), 3, height-ITEM_H, Graphics.LEFT);
-				gc.drawString(combinedCommands.get(1).getLabel(), width-3, height-ITEM_H, Graphics.RIGHT);
-				break;
-			default:
-				gc.drawString("Options", 3, height-17, Graphics.LEFT);
-		}
+        // Draw Title:
+        gc.drawString(title, width / 2, 2, Graphics.HCENTER);
+        gc.drawLine(0, 20, width, 20);
+        gc.drawLine(0, height - 20, width, height - 20);
 
-		if(this.getDisplay().getCurrent() == this)
-		{
-			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
-		}
-	}
+        if (items.size() > 0) {
+            if (currentIndex < 0) {
+                currentIndex = 0;
+            }
+            // Draw list items //
+            int ah = height - 50; // allowed height
+            int max = (int) Math.floor(ah / ITEM_H); // max items per page
+            if (items.size() < max) {
+                max = items.size();
+            }
 
-	protected void renderCommands()
-	{
-		PlatformGraphics gc = platformImage.getGraphics();
+            int page = 0;
+            page = (int) Math.floor(currentIndex / max); // current page
+            int first = page * max; // first item to show
+            int last = first + max - 1;
 
-		// Draw Background:
-		gc.setColor(0xFFFFFF);
-		gc.fillRect(0,0,width,height);
-		gc.setColor(0x000000);
-		
-		// Draw Title:
-		gc.drawString("Options", width/2, 2, Graphics.HCENTER);
-		gc.drawLine(0, 20, width, 20);
-		gc.drawLine(0, height-20, width, height-20);
+            if (last >= items.size()) {
+                last = items.size() - 1;
+            }
 
-		combinAll();
-		if(combinedCommands.size()>0)
-		{
-			if(currentCommand<0) { currentCommand = 0; }
-			// Draw commands //
-			int ah = height - 50; // allowed height
-			int max = (int)Math.floor(ah / ITEM_H); // max items per page
-			if(combinedCommands.size()<max) { max = combinedCommands.size(); }
+            int y = 25;
+            for (int i = first; i <= last; i++) {
+                if (currentIndex == i) {
+                    gc.fillRect(0, y, width, ITEM_H);
+                    gc.setColor(0xFFFFFF);
+                }
+                Item item = items.get(i);
+                item.setBondle(0, y, getWidth(), ITEM_H);
+                item.render(gc, 0, y, getWidth(), ITEM_H);
 
-			int page = 0;
-			page = (int)Math.floor(currentCommand/max); // current page
-			int first = page * max; // first item to show
-			int last = first + max - 1;
+                gc.setColor(0x000000);
+                if (item instanceof ImageItem) {
+                    gc.drawImage(((ImageItem) item).getImage(), width / 2, y, Graphics.HCENTER);
+                }
+                y += ITEM_H;
+            }
+        }
 
-			if(last>= combinedCommands.size()) { last = combinedCommands.size()-1; }
+        combinAll();
 
-			int y = 25;
-			for(int i=first; i<=last; i++)
-			{	
-				if(currentCommand == i)
-				{
-					gc.fillRect(0,y,width,ITEM_H);
-					gc.setColor(0xFFFFFF);
-				}
+        if (combinedCommands.size() > 2) {
+            if (options == null) {
+                options = new Command("Options", Command.SCREEN, 0);
+                options.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
+                optionsLeft = new Command("Options", Command.SCREEN, 0);
+                optionsLeft.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
+                optionsRight = new Command("Options", Command.SCREEN, 0);
+                optionsRight.setBondle(width * 2 / 3, height - ITEM_H, width / 3, ITEM_H);
+            }
+        } else {
+            options = null;
+        }
 
-				Command cmd = combinedCommands.get(i);
-				cmd.setBondle(0, y, width, ITEM_H);
-				gc.drawString(cmd.getLabel(), width/2, y, Graphics.HCENTER);
+        // Draw Commands
+        switch (combinedCommands.size()) {
+            case 0:
+                break;
+            case 1:
+                Command cmd = combinedCommands.get(0);
+                cmd.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
+                gc.drawString(combinedCommands.get(0).getLabel(), 3, height - ITEM_H, Graphics.LEFT);
+                gc.drawString("" + (currentIndex + 1) + " of " + items.size(), width - 3, height - 17, Graphics.RIGHT);
+                break;
+            case 2:
+                cmd = combinedCommands.get(0);
+                cmd.setBondle(0, height - ITEM_H, width / 3, ITEM_H);
+                cmd = combinedCommands.get(1);
+                cmd.setBondle(width * 2 / 3, height - ITEM_H, width / 3, ITEM_H);
+                gc.drawString(combinedCommands.get(0).getLabel(), 3, height - ITEM_H, Graphics.LEFT);
+                gc.drawString(combinedCommands.get(1).getLabel(), width - 3, height - ITEM_H, Graphics.RIGHT);
+                break;
+            default:
+                gc.drawString("Options", 3, height - 17, Graphics.LEFT);
+        }
 
-				gc.setColor(0x000000);
-				y+=ITEM_H;
-			}
-		}
-		gc.drawString("Okay", 3, height-17, Graphics.LEFT);
-		gc.drawString("Back", width-3, height-17, Graphics.RIGHT);
+        if (this.getDisplay().getCurrent() == this) {
+            FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
+        }
+    }
 
-		if(this.getDisplay().getCurrent() == this)
-		{
-			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
-		}
-	}
+    protected void renderCommands() {
+        PlatformGraphics gc = platformImage.getGraphics();
 
-	private void combinAll(){
-		Item curItem = null;
-		if (currentItem >= 0 && currentItem < items.size()) {
-			curItem = items.get(currentItem);
-		}
+        // Draw Background:
+        gc.setColor(0xFFFFFF);
+        gc.fillRect(0, 0, width, height);
+        gc.setColor(0x000000);
 
-		combinedCommands.clear();
-		if (curItem != null) combinedCommands.addAll(curItem.getCommands());
-		combinedCommands.addAll(commands);
-	}
+        // Draw Title:
+        gc.drawString("Options", width / 2, 2, Graphics.HCENTER);
+        gc.drawLine(0, 20, width, 20);
+        gc.drawLine(0, height - 20, width, height - 20);
 
-	private Item getCurrentItem(){
-		Item curItem = null;
-		if (currentItem >= 0 && currentItem < items.size()) {
-			curItem = items.get(currentItem);
-		}
-		return curItem;
-	}
+        combinAll();
+        if (combinedCommands.size() > 0) {
+            if (currentCommand < 0) {
+                currentCommand = 0;
+            }
+            // Draw commands //
+            int ah = height - 50; // allowed height
+            int max = (int) Math.floor(ah / ITEM_H); // max items per page
+            if (combinedCommands.size() < max) {
+                max = combinedCommands.size();
+            }
 
-	protected void keyPressedCommands(int key)
-	{
-		combinAll();
-		switch(key)
-		{
-			case Mobile.KEY_NUM2: currentCommand--; break;
-			case Mobile.KEY_NUM8: currentCommand++; break;
-			case Mobile.NOKIA_UP: currentCommand--; break;
-			case Mobile.NOKIA_DOWN: currentCommand++; break;
-			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
-			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
-			case Mobile.KEY_NUM5: doDefaultCommand(); break;
-		}
-		if(currentCommand>= combinedCommands.size()) { currentCommand = 0; }
-		if(currentCommand<0) { currentCommand = combinedCommands.size()-1; }
-		if(listCommands==true) { renderCommands(); }
-	}
+            int page = 0;
+            page = (int) Math.floor(currentCommand / max); // current page
+            int first = page * max; // first item to show
+            int last = first + max - 1;
 
-	protected void doCommand(int index) {
-		if (index >= 0 && combinedCommands.size() > index) {
-			if (commandlistener != null) {
-				Command cmd = combinedCommands.get(index);
-				if (isCurrentItemOwn(cmd)) {
-					Item cur = getCurrentItem();
-					cur.getCommandListener().commandAction(cmd, cur);
-				} else {
-					commandlistener.commandAction(cmd, this);
-				}
-			}
-		}
-	}
+            if (last >= combinedCommands.size()) {
+                last = combinedCommands.size() - 1;
+            }
 
-	protected void doDefaultCommand()
-	{
-		//doCommand(0);
-		Item curItem=getCurrentItem();
-		if(curItem!=null){
-			curItem.doActive();
-		}
-	}
+            int y = 25;
+            for (int i = first; i <= last; i++) {
+                if (currentCommand == i) {
+                    gc.fillRect(0, y, width, ITEM_H);
+                    gc.setColor(0xFFFFFF);
+                }
 
-	protected void doLeftCommand()
-	{
-		if(combinedCommands.size()>2)
-		{
-			if(listCommands == true)
-			{
-				doCommand(currentCommand);
-			}
-			else
-			{
-				listCommands = true;
-				currentCommand = 0;
-				render();
-			}
-			return;
-		}
-		else
-		{
-			if(combinedCommands.size()>0 && combinedCommands.size()<=2)
-			{
-				doCommand(0);
-			}
-		}
-	}
+                Command cmd = combinedCommands.get(i);
+                cmd.setBondle(0, y, width, ITEM_H);
+                gc.drawString(cmd.getLabel(), width / 2, y, Graphics.HCENTER);
 
-	protected void doRightCommand()
-	{
-		if(listCommands==true)
-		{
-			listCommands = false;
-			currentCommand = 0;
-			render();
-		}
-		else
-		{
-			if(combinedCommands.size()>0 && combinedCommands.size()<=2)
-			{
-				doCommand(1);
-			}
-		}
-	}
+                gc.setColor(0x000000);
+                y += ITEM_H;
+            }
+        }
+        gc.drawString("Okay", 3, height - 17, Graphics.LEFT);
+        gc.drawString("Back", width - 3, height - 17, Graphics.RIGHT);
 
-	protected boolean isCurrentItemOwn(Command cmd) {
-		Item cur = getCurrentItem();
-		if (cur != null) {
-			return cur.getCommands().contains(cmd);
-		}
-		return false;
-	}
+        if (this.getDisplay().getCurrent() == this) {
+            FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
+        }
+    }
 
-	protected ArrayList<Command> getCombinedCommands() {
-		return combinedCommands;
-	}
+    private void combinAll() {
+        Item curItem = null;
+        if (currentIndex >= 0 && currentIndex < items.size()) {
+            curItem = items.get(currentIndex);
+        }
+
+        combinedCommands.clear();
+        if (curItem != null) {
+//            if (curItem.getDefaultCommand() != null) {
+//                combinedCommands.add(curItem.getDefaultCommand());
+//            }
+            combinedCommands.addAll(curItem.getCommands());
+        }
+        combinedCommands.addAll(commands);
+    }
+
+    Item getCurrentItem() {
+        Item curItem = null;
+        if (currentIndex >= 0 && currentIndex < items.size()) {
+            curItem = items.get(currentIndex);
+        }
+        return curItem;
+    }
+
+    protected void keyPressedCommands(int key) {
+        combinAll();
+        switch (key) {
+            case Mobile.KEY_NUM2:
+                currentCommand--;
+                break;
+            case Mobile.KEY_NUM8:
+                currentCommand++;
+                break;
+            case Mobile.NOKIA_UP:
+                currentCommand--;
+                break;
+            case Mobile.NOKIA_DOWN:
+                currentCommand++;
+                break;
+            case Mobile.NOKIA_SOFT1:
+                doLeftCommand();
+                break;
+            case Mobile.NOKIA_SOFT2:
+                doRightCommand();
+                break;
+            case Mobile.KEY_NUM5:
+                doDefaultCommand();
+                break;
+        }
+        if (currentCommand >= combinedCommands.size()) {
+            currentCommand = 0;
+        }
+        if (currentCommand < 0) {
+            currentCommand = combinedCommands.size() - 1;
+        }
+        if (listCommands == true) {
+            renderCommands();
+        }
+    }
+
+    protected void doCommand(int index) {
+        if (index >= 0 && combinedCommands.size() > index) {
+            if (commandlistener != null) {
+                Command cmd = combinedCommands.get(index);
+                if (isCurrentItemOwn(cmd)) {
+                    Item cur = getCurrentItem();
+                    cur.getCommandListener().commandAction(cmd, cur);
+                } else {
+                    commandlistener.commandAction(cmd, this);
+                }
+            }
+        }
+    }
+
+    protected void doDefaultCommand() {
+        //doCommand(0);
+        Item curItem = getCurrentItem();
+        if (curItem != null) {
+            curItem.doActive();
+        }
+    }
+
+    protected void doLeftCommand() {
+        if (combinedCommands.size() > 2) {
+            if (listCommands == true) {
+                doCommand(currentCommand);
+            } else {
+                listCommands = true;
+                currentCommand = 0;
+                render();
+            }
+            return;
+        } else {
+            if (combinedCommands.size() > 0 && combinedCommands.size() <= 2) {
+                doCommand(0);
+            }
+        }
+    }
+
+    protected void doRightCommand() {
+        if (listCommands == true) {
+            listCommands = false;
+            currentCommand = 0;
+            render();
+        } else {
+            if (combinedCommands.size() > 0 && combinedCommands.size() <= 2) {
+                doCommand(1);
+            }
+        }
+    }
+
+    protected boolean isCurrentItemOwn(Command cmd) {
+        Item cur = getCurrentItem();
+        if (cur != null) {
+            return cur.getCommands().contains(cmd);
+        }
+        return false;
+    }
+
+    protected ArrayList<Command> getCombinedCommands() {
+        return combinedCommands;
+    }
+
+    /**
+     * if x,y is left area return 0
+     * if x,y is right area return 1
+     * otherwise return -1
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    int getCommandHit(int x, int y) {
+        if (y < height - ITEM_H) {
+            return -1;
+        } else {
+            return (x < width / 2) ? 0 : 1;
+        }
+    }
 }

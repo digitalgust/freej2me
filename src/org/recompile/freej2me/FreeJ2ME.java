@@ -77,7 +77,7 @@ public class FreeJ2ME extends J2meLoader {
         ThreadGroup tg = new ThreadGroup("threadgroup-" + this.toString());
         Thread t = new Thread(tg, () -> {//这个线程相当于是一个沙盒，和外部代码隔离，这样就可以同时运行多个freej2me实例
             openMidlet();
-            System.out.println("midlet finished");
+            System.out.println("midlet loaded");
 
             processEvent();
         }, "thread-" + this.toString());

@@ -261,9 +261,13 @@ public class MobilePlatform
 		if (textBox != null) {
 			panel.add(awtBox);
 			awtBox.setBounds(0, COMP_H, panW, panH - COMP_H * 2);
+			awtBox.requestFocus();
+			awtBox.setCaretPosition(awtBox.getText().length());
 		} else {
 			panel.add(awtField);
 			awtField.setBounds(0, (panH - COMP_H * 2) / 2, panW, COMP_H);
+			awtField.requestFocus();
+			awtField.setCaretPosition(awtField.getText().length());
 		}
 		java.awt.Button okBtn = new Button("Ok(ENTER)");
 		panel.add(okBtn);

@@ -16,105 +16,208 @@
 */
 package javax.microedition.lcdui;
 
+import org.recompile.freej2me.FreeJ2ME;
+import org.recompile.mobile.Mobile;
+import org.recompile.mobile.PlatformGraphics;
+
 import java.util.ArrayList;
 
 
+public class ChoiceGroup extends Item implements Choice {
 
-public class ChoiceGroup extends Item implements Choice
-{
-
-	private String label;
+    private String label;
 
     private int type;
 
-	private ArrayList<String> strings = new ArrayList<String>();
+    private ArrayList<String> strings = new ArrayList<String>();
 
-	private ArrayList<Image> images = new ArrayList<Image>();
+    private ArrayList<Image> images = new ArrayList<Image>();
 
-	private int fitPolicy;
+    private int fitPolicy;
 
-	public ChoiceGroup(String choiceLabel, int choiceType)
-	{
-		label = choiceLabel;
-		type = choiceType;
-	}
+    int selectedIndex = 0;
 
-	public ChoiceGroup(String choiceLabel, int choiceType, String[] stringElements, Image[] imageElements)
-	{
-		label = choiceLabel;
-		type = choiceType;
-		for(int i=0; i<stringElements.length; i++)
-		{
-			try
-			{
-				strings.add(stringElements[i]);
-				images.add(imageElements[i]);
-			}
-			catch(Exception e) { }
-		}
-	}
+    boolean[] selectedFlags;
 
-	ChoiceGroup(String choiceLabel, int choiceType, boolean validateChoiceType)
-	{
-		label = choiceLabel;
-		type = choiceType;
-	}
+    public ChoiceGroup(String choiceLabel, int choiceType) {
+        label = choiceLabel == null ? "" : choiceLabel;
+        setType(choiceType);
+    }
 
-	ChoiceGroup(String choiceLabel, int choiceType, String[] stringElements, Image[] imageElements, boolean validateChoiceType)
-	{
-		label = choiceLabel;
-		type = choiceType;
-		for(int i=0; i<stringElements.length; i++)
-		{
-			try
-			{
-				strings.add(stringElements[i]);
-				images.add(imageElements[i]);
-			}
-			catch(Exception e) { }
-		}
-	}
+    public ChoiceGroup(String choiceLabel, int choiceType, String[] stringElements, Image[] imageElements) {
+        label = choiceLabel == null ? "" : choiceLabel;
+        setType(choiceType);
+        for (int i = 0; i < stringElements.length; i++) {
+            try {
+                strings.add(stringElements[i]);
+                images.add(imageElements != null && i < imageElements.length ? imageElements[i] : null);
+            } catch (Exception e) {
+            }
+        }
+        selectedFlags = new boolean[strings.size()];
+    }
 
-	public int append(String stringPart, Image imagePart) { return strings.size(); }
+    ChoiceGroup(String choiceLabel, int choiceType, boolean validateChoiceType) {
+        label = choiceLabel == null ? "" : choiceLabel;
+        setType(choiceType);
+    }
 
-	public void delete(int itemNum) { strings.remove(itemNum); images.remove(itemNum); }
+    ChoiceGroup(String choiceLabel, int choiceType, String[] stringElements, Image[] imageElements, boolean validateChoiceType) {
+        label = choiceLabel == null ? "" : choiceLabel;
+        setType(choiceType);
+        for (int i = 0; i < stringElements.length; i++) {
+            try {
+                strings.add(stringElements[i]);
+                images.add(imageElements[i]);
+            } catch (Exception e) {
+            }
+        }
+    }
 
-	public void deleteAll() { strings.clear(); images.clear(); }
+    void setType(int choiceType) {
+        if (choiceType == IMPLICIT || choiceType == POPUP) {
+            choiceType = EXCLUSIVE;
+        }
+        type = choiceType;
+    }
 
-	public int getFitPolicy() { return fitPolicy; }
+    public int append(String stringPart, Image imagePart) {
+        return strings.size();
+    }
 
-	public Font getFont(int itemNum) { return Font.getDefaultFont(); }
+    public void delete(int itemNum) {
+        strings.remove(itemNum);
+        images.remove(itemNum);
+    }
 
-	public Image getImage(int elementNum) { return images.get(elementNum); }
+    public void deleteAll() {
+        strings.clear();
+        images.clear();
+    }
 
-	public int getSelectedFlags(boolean[] selectedArray) { return 1; }
+    public int getFitPolicy() {
+        return fitPolicy;
+    }
 
-  	public int getSelectedIndex() { return 1; }
+    public Font getFont(int itemNum) {
+        return Font.getDefaultFont();
+    }
 
-	public String getString(int elementNum) { return strings.get(elementNum); }
+    public Image getImage(int elementNum) {
+        return images.get(elementNum);
+    }
 
-  	public void insert(int elementNum, String stringPart, Image imagePart)
-	{
-		strings.add(elementNum, stringPart);
-		images.add(elementNum, imagePart);
-	}
+    public int getSelectedFlags(boolean[] selectedArray) {
+        return 1;
+    }
 
-  	public boolean isSelected(int elementNum) { return false; }
+    public int getSelectedIndex() {
+        return selectedIndex;
+    }
 
-  	public void set(int elementNum, String stringPart, Image imagePart)
-	{
-		strings.set(elementNum, stringPart);
-		images.set(elementNum, imagePart);
-	}
+    public String getString(int elementNum) {
+        return strings.get(elementNum);
+    }
 
-	public void setFitPolicy(int policy) { fitPolicy = policy; }
+    public void insert(int elementNum, String stringPart, Image imagePart) {
+        strings.add(elementNum, stringPart);
+        images.add(elementNum, imagePart);
+    }
 
-	public void setFont(int itemNum, Font font) { }
+    public boolean isSelected(int elementNum) {
+        return false;
+    }
 
-  	public void setSelectedFlags(boolean[] selectedArray) { }
+    public void set(int elementNum, String stringPart, Image imagePart) {
+        strings.set(elementNum, stringPart);
+        images.set(elementNum, imagePart);
+    }
 
-  	public void setSelectedIndex(int elementNum, boolean selected) { }
+    public void setFitPolicy(int policy) {
+        fitPolicy = policy;
+    }
 
-	public int size() { return strings.size(); }
+    public void setFont(int itemNum, Font font) {
+    }
 
+    public void setSelectedFlags(boolean[] selectedArray) {
+        if (selectedFlags == null || selectedFlags.length != selectedArray.length) {
+            throw new IllegalArgumentException();
+        }
+        System.arraycopy(selectedArray, 0, selectedFlags, 0, selectedArray.length);
+    }
+
+    public void setSelectedIndex(int elementNum, boolean selected) {
+        selectedIndex = elementNum;
+    }
+
+    public int size() {
+        return strings.size();
+    }
+
+    protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
+        int cx = x;
+        int color = gc.getColor();
+        for (int c = 0; c < size(); c++) {
+            if (c == selectedIndex) {
+                gc.setColor(color);
+            } else {
+                gc.setColor(0xff808080);
+            }
+            if (type == MULTIPLE) {
+                drawRect(gc, cx, y + 2, h - 4, h - 4, selectedFlags[c]);
+            } else if (type == EXCLUSIVE) {
+                drawCircle(gc, cx, y + 2, h - 4, h - 4, selectedIndex == c);
+            }
+            cx += h;
+            gc.drawString(getString(c), cx, y, Graphics.LEFT | Graphics.TOP);
+            gc.setColor(color);
+            cx += gc.getFont().stringWidth(getString(c)) + 3;
+        }
+    }
+
+    void drawRect(PlatformGraphics gc, int x, int y, int w, int h, boolean selected) {
+        //画复选框
+        gc.drawRect(x, y, w, h);
+        if (selected) {
+            gc.fillRect(x + 3, y + 3, w - 5, h - 5);
+        }
+    }
+
+    void drawCircle(PlatformGraphics gc, int x, int y, int w, int h, boolean selected) {
+        //
+        gc.drawArc(x, y, w, h, 0, 360);
+        if (selected) {
+            gc.fillArc(x + 2, y + 2, w - 4, h - 4, 0, 360);
+        }
+    }
+
+    public void keyPressed(int key) {
+        if (key == Mobile.NOKIA_LEFT) {
+            selectedIndex--;
+            if (selectedIndex < 0) {
+                selectedIndex = size() - 1;
+            }
+        } else if (key == Mobile.NOKIA_RIGHT) {
+            selectedIndex++;
+            if (selectedIndex >= size()) {
+                selectedIndex = 0;
+            }
+        }
+    }
+
+    protected void doActive() {
+        if (type == MULTIPLE) {
+            selectedFlags[selectedIndex] = !selectedFlags[selectedIndex];
+        } else if (type == EXCLUSIVE) {
+            selectedIndex++;
+            if (selectedIndex >= size()) {
+                selectedIndex = 0;
+            }
+        }
+    }
+
+    boolean needDoubleClick() {
+        return true;
+    }
 }
