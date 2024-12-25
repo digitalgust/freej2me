@@ -301,7 +301,7 @@ public class PlatformPlayer implements Player
 		public void start()
 		{
 			if(isRunning()) { return; }
-			
+			if (wavClip == null) return;
 			if(wavClip.getFramePosition() >= wavClip.getFrameLength())
 			{
 				wavClip.setFramePosition(0);
@@ -314,6 +314,7 @@ public class PlatformPlayer implements Player
 
 		public void stop()
 		{
+			if (wavClip == null) return;
 			wavClip.stop();
 			time = wavClip.getMicrosecondPosition();
 			state = Player.PREFETCHED;
@@ -322,22 +323,26 @@ public class PlatformPlayer implements Player
 
 		public void setLoopCount(int count)
 		{
+			if (wavClip == null) return;
 			loops = count;
 			wavClip.loop(count);
 		}
 
 		public long setMediaTime(long now)
 		{
+			if (wavClip == null) return 0;
 			wavClip.setMicrosecondPosition(now);
 			return now;
 		}
 		public long getMediaTime()
 		{
+			if (wavClip == null) return 0;
 			return wavClip.getMicrosecondPosition();
 		}
 
 		public boolean isRunning()
 		{
+			if (wavClip == null) return false;
 			return wavClip.isRunning();
 		}
 	}

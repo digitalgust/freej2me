@@ -18,20 +18,14 @@ package org.recompile.freej2me;
 
 import org.recompile.mobile.*;
 
-import java.awt.Image;
-import java.awt.Canvas;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-
 import java.io.File;
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.ProcessBuilder;
 
-public class Anbu extends J2meLoader {
+public class Anbu extends J2meSandBox {
 
     public static void main(String[] args) {
         Anbu app = new Anbu(args);

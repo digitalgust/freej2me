@@ -37,6 +37,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     public PlatformGraphics platformGraphics;
     public PlatformImage platformImage;
 
+    ThreadLocal<Rectangle> clipRect = ThreadLocal.withInitial(() -> new Rectangle());
+
     public PlatformGraphics(PlatformImage image) {
         canvas = image.getCanvas();
         gc = canvas.createGraphics();
@@ -56,7 +58,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
     public void reset() //Internal use method, resets the Graphics object to its inital values
     {
-        translate(-1 * translateX, -1 * translateY);
+        translate(-translateX, -translateY);
         setClip(0, 0, canvas.getWidth(), canvas.getHeight());
         setColor(0, 0, 0);
         setFont(Font.getDefaultFont());
@@ -102,7 +104,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         drawString(new String(str), x, y, anchor);
     }
 
-    public void drawImage(Image image, int x, int y, int anchor) {
+    public void drawImage(javax.microedition.lcdui.Image image, int x, int y, int anchor) {
         try {
             int imgWidth = image.getWidth();
             int imgHeight = image.getHeight();
@@ -110,13 +112,21 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
             x = AnchorX(x, imgWidth, anchor);
             y = AnchorY(y, imgHeight, anchor);
 
-            gc.drawImage(image.platformImage.getCanvas(), x, y, null);
+            if (this.canvas.getWidth() > 240) {
+                int debug = 1;
+                //setClip(x,y,imgWidth,imgHeight);
+            }
+//            if (image.platformImage.getCanvas() == canvas) {
+//                int debug = 1;
+//            }
+            boolean b = gc.drawImage(image.platformImage.getCanvas(), x, y, null);
+            int debug = 1;
         } catch (Exception e) {
             System.out.println("drawImage A:" + e.getMessage());
         }
     }
 
-    public void drawImage(Image image, int x, int y) {
+    public void drawImage(javax.microedition.lcdui.Image image, int x, int y) {
         try {
             gc.drawImage(image.platformImage.getCanvas(), x, y, null);
         } catch (Exception e) {
@@ -181,20 +191,36 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
     /**
      * Midp 2.0 javax.microedition.lcdui.Graphics.drawRegion implementation
+     * Transform :
+     * Sprite.TRANS_NONE
+     * Sprite.TRANS_ROT90
+     * Sprite.TRANS_ROT180
+     * Sprite.TRANS_ROT270
+     * Sprite.TRANS_MIRROR
+     * Sprite.TRANS_MIRROR_ROT90
+     * Sprite.TRANS_MIRROR_ROT180
+     * Sprite.TRANS_MIRROR_ROT270
      *
      * @param image
      * @param subx
      * @param suby
      * @param subw
      * @param subh
-     * @param transform
+     * @param transform j2me Sprite transform define
      * @param x
      * @param y
      * @param anchor
      */
     public void drawRegion(Image image, int subx, int suby, int subw, int subh, int transform, int x, int y, int anchor) {
 
-        Shape shape = gc.getClip();
+//        if (image.platformImage.getCanvas() == canvas) {
+//            int debug = 1;
+//        }
+//        if (image.platformImage.getCanvas().getWidth() > 100) {
+//            int debug = 1;
+//        }
+        Rectangle clipRect = new Rectangle();
+        gc.getClipBounds(clipRect);
         PlatformImageTransform pt = PlatformImage.midpTransformImage(image.platformImage.getCanvas(), subx, suby, subw, subh, transform);
 
         int imgx = x - pt.regionX;
@@ -202,15 +228,26 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         int transX = AnchorX(imgx, pt.regionWidth, anchor);
         int transY = AnchorY(imgy, pt.regionHeight, anchor);
         gc.translate(transX, transY);
-//        gc.setColor(Color.RED);
-//        gc.drawRect(-2, -2, 4, 4);
         gc.setClip(pt.regionX, pt.regionY, pt.regionWidth, pt.regionHeight);
         gc.drawImage(image.platformImage.getCanvas(), pt.transform, null);
 //        gc.drawRect(pt.regionX, pt.regionY, pt.regionWidth, pt.regionHeight);
         gc.translate(-transX, -transY);
-        gc.setClip(shape);
+        Rectangle rect = clipRect;
+        gc.setClip(rect.x, rect.y, rect.width, rect.height);
     }
 
+    /**
+     * j2me 2.0 javax.microedition.lcdui.Graphics.drawRGB implementation
+     *
+     * @param rgbData
+     * @param offset
+     * @param scanlength
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     * @param processAlpha
+     */
     public void drawRGB(int[] rgbData, int offset, int scanlength, int x, int y, int width, int height, boolean processAlpha) {
         if (width < 1 || height < 1) {
             return;
@@ -407,12 +444,15 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
      * @param manipulation
      */
     public void drawImage(javax.microedition.lcdui.Image img, int x, int y, int anchor, int manipulation) {
-        //System.out.println("Nokia drawImage");
-        PlatformImageTransform pt = PlatformImage.nokiaTransformImage(img.platformImage.getCanvas(), manipulation);
+        drawImageNokia(img.platformImage.getCanvas(), x, y, anchor, manipulation);
+    }
+
+    private void drawImageNokia(BufferedImage bimg, int x, int y, int anchor, int manipulation) {
+        PlatformImageTransform pt = PlatformImage.nokiaTransformImage(bimg, manipulation);
         x = AnchorX(x, pt.width, anchor);
         y = AnchorY(y, pt.height, anchor);
         gc.translate(x, y);
-        gc.drawImage(img.platformImage.getCanvas(), pt.transform, null);
+        gc.drawImage(bimg, pt.transform, null);
         gc.translate(-x, -y);
     }
 
@@ -447,8 +487,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
                 temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 temp.setRGB(0, 0, width, height, data, 0, width);
                 pt = PlatformImage.nokiaTransformImage(temp, manipulation);
-                bi = PlatformImage.getTransformedImage(temp, pt);
-                gc.drawImage(bi, x, y, null);
+//                bi = PlatformImage.getTransformedImage(temp, pt);
+//                gc.drawImage(bi, x, y, null);
+                drawImageNokia(temp, x, y, 0, manipulation);
                 break;
 
             case 1: // TYPE_BYTE_1_GRAY // used by Monkiki's Castles
@@ -466,8 +507,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
                 temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 temp.setRGB(0, 0, width, height, data, 0, scanlength);
                 pt = PlatformImage.nokiaTransformImage(temp, manipulation);
-                bi = PlatformImage.getTransformedImage(temp, pt);
-                gc.drawImage(bi, x, y, null);
+//                bi = PlatformImage.getTransformedImage(temp, pt);
+//                gc.drawImage(bi, x, y, null);
+                drawImageNokia(temp, x, y, 0, manipulation);
                 break;
 
             default:
@@ -480,8 +522,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         temp.setRGB(0, 0, width, height, pixels, offset, scanlength);
         PlatformImageTransform pt = PlatformImage.nokiaTransformImage(temp, manipulation);
-        BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
-        gc.drawImage(temp2, x, y, null);
+//        BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
+//        gc.drawImage(temp2, x, y, null);
+        drawImageNokia(temp, x, y, 0, manipulation);
     }
 
     public void drawPixels(short[] pixels, boolean transparency, int offset, int scanlength, int x, int y, int width, int height, int manipulation, int format) {
@@ -495,8 +538,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         temp.setRGB(0, 0, width, height, data, offset, scanlength);
         PlatformImageTransform pt = PlatformImage.nokiaTransformImage(temp, manipulation);
-        BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
-        gc.drawImage(temp2, x, y, null);
+//        BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
+//        gc.drawImage(temp2, x, y, null);
+        drawImageNokia(temp, x, y, 0, manipulation);
     }
 
     public void drawPolygon(int[] xPoints, int xOffset, int[] yPoints, int yOffset, int nPoints, int argbColor) {

@@ -201,7 +201,7 @@ public class TextBox extends Screen
         }
         if (this.getDisplay().getCurrent() == this)
 		{
-			FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
+			FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, 0, 0, width, height);
 		}
 	}
 }

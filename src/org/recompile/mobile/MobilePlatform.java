@@ -19,13 +19,9 @@ package org.recompile.mobile;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.URL;
-import java.io.InputStream;
 
 import java.awt.event.KeyEvent;
 
-import javax.microedition.lcdui.Display;
-import javax.microedition.lcdui.Canvas;
-import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.game.GameCanvas;
 import javax.microedition.lcdui.Image;
 import javax.microedition.m3g.Graphics3D;
@@ -198,20 +194,20 @@ public class MobilePlatform
 	********* Graphics ********
 */
 
+//	public void flushGraphics(Image img, int x, int y, int width, int height)
+//	{
+//		gc.flushGraphics(img, x, y, width, height);
+//
+//		painter.run();//画到窗口画布上
+//
+//		//System.gc();
+//	}
+
 	public void flushGraphics(Image img, int x, int y, int width, int height)
 	{
 		gc.flushGraphics(img, x, y, width, height);
 
-		painter.run();
-
-		//System.gc();
-	}
-
-	public void repaint(Image img, int x, int y, int width, int height)
-	{
-		gc.flushGraphics(img, x, y, width, height);
-
-		painter.run();
+		painter.run();//画到窗口画布上
 
 		//System.gc();
 	}

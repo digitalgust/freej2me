@@ -239,7 +239,7 @@ public abstract class Displayable {
         }
 
         if (this.getDisplay().getCurrent() == this) {
-            FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
+            FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, 0, 0, width, height);
         }
     }
 
@@ -296,7 +296,7 @@ public abstract class Displayable {
         gc.drawString("Back", width - 3, height - 17, Graphics.RIGHT);
 
         if (this.getDisplay().getCurrent() == this) {
-            FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
+            FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, 0, 0, width, height);
         }
     }
 

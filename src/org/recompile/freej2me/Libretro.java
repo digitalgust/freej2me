@@ -18,22 +18,15 @@ package org.recompile.freej2me;
 
 import org.recompile.mobile.*;
 
-import java.awt.Image;
-import java.awt.Canvas;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
-import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.net.URL;
 
-public class Libretro extends J2meLoader
+public class Libretro extends J2meSandBox
 {
 	private int lcdWidth;
 	private int lcdHeight;

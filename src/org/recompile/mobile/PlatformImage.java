@@ -389,17 +389,19 @@ public class PlatformImage extends javax.microedition.lcdui.Image {
 
     public static PlatformImageTransform nokiaTransformImage(BufferedImage image, int manipulation) {
         //DirectGraphics manipulation order : rotate -> vertical mirror-> horizontal mirror
-        //Sprite manipulation order: horizontal mirror -> rotate
-        final int HV = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.FLIP_VERTICAL;
-        final int HV90 = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.FLIP_VERTICAL | DirectGraphics.ROTATE_90;
-        final int HV180 = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.FLIP_VERTICAL | DirectGraphics.ROTATE_180;
-        final int HV270 = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.FLIP_VERTICAL | DirectGraphics.ROTATE_270;
-        final int H90 = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.ROTATE_90;
-        final int H180 = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.ROTATE_180;
-        final int H270 = DirectGraphics.FLIP_HORIZONTAL | DirectGraphics.ROTATE_270;
-        final int V90 = DirectGraphics.FLIP_VERTICAL | DirectGraphics.ROTATE_90;
-        final int V180 = DirectGraphics.FLIP_VERTICAL | DirectGraphics.ROTATE_180;
-        final int V270 = DirectGraphics.FLIP_VERTICAL | DirectGraphics.ROTATE_270;
+        //DirectGraphics rotation is : counter-clockwise
+        //Sprite manipulation order : horizontal mirror -> rotate
+        //Sprite rotation is : clockwise
+        final int HV = DirectGraphics.FLIP_VERTICAL | DirectGraphics.FLIP_HORIZONTAL;
+        final int HV90 = DirectGraphics.ROTATE_90 | DirectGraphics.FLIP_VERTICAL | DirectGraphics.FLIP_HORIZONTAL;
+        final int HV180 = DirectGraphics.ROTATE_180 | DirectGraphics.FLIP_VERTICAL | DirectGraphics.FLIP_HORIZONTAL;
+        final int HV270 = DirectGraphics.ROTATE_270 | DirectGraphics.FLIP_VERTICAL | DirectGraphics.FLIP_HORIZONTAL;
+        final int V90 = DirectGraphics.ROTATE_90 | DirectGraphics.FLIP_VERTICAL;
+        final int V180 = DirectGraphics.ROTATE_180 | DirectGraphics.FLIP_VERTICAL;
+        final int V270 = DirectGraphics.ROTATE_270 | DirectGraphics.FLIP_VERTICAL;
+        final int H90 = DirectGraphics.ROTATE_90 | DirectGraphics.FLIP_HORIZONTAL;
+        final int H180 = DirectGraphics.ROTATE_180 | DirectGraphics.FLIP_HORIZONTAL;
+        final int H270 = DirectGraphics.ROTATE_270 | DirectGraphics.FLIP_HORIZONTAL;
         switch (manipulation) {
             case V180:
             case DirectGraphics.FLIP_HORIZONTAL:
@@ -416,12 +418,11 @@ public class PlatformImage extends javax.microedition.lcdui.Image {
             case HV270:
             case DirectGraphics.ROTATE_270:
                 return midpTransformImage(image, Sprite.TRANS_ROT90);
-            case V270:
-            case H90:
-                //return PlatformImage.transformImage(PlatformImage.transformImage(image, Sprite.TRANS_MIRROR), Sprite.TRANS_ROT270);
-                return midpTransformImage(image, Sprite.TRANS_MIRROR_ROT270);
             case V90:
             case H270:
+                return midpTransformImage(image, Sprite.TRANS_MIRROR_ROT270);
+            case H90:
+            case V270:
                 return midpTransformImage(image, Sprite.TRANS_MIRROR_ROT90);
             case 0: /* No Manipulation */
             case HV180:

@@ -17,7 +17,7 @@
 package org.recompile.mobile;
 
 import org.recompile.freej2me.FreeJ2ME;
-import org.recompile.freej2me.J2meLoader;
+import org.recompile.freej2me.J2meSandBox;
 
 import java.io.InputStream;
 
@@ -40,7 +40,7 @@ public class Mobile {
 
     private Graphics3D graphics3d;
 
-    private J2meLoader j2me;
+    private J2meSandBox j2meSandBox;
 
     public static boolean quiet = false;
 
@@ -105,8 +105,12 @@ public class Mobile {
     public static final int MOTOROLA_FIRE = -20;
 
 
-    public Mobile(J2meLoader j2me) {
-        this.j2me = j2me;
+    public Mobile(J2meSandBox j2meSandBox) {
+        this.j2meSandBox = j2meSandBox;
+    }
+
+    public J2meSandBox getJ2meSandBox() {
+        return j2meSandBox;
     }
 
     public MobilePlatform getPlatform() {
@@ -154,8 +158,8 @@ public class Mobile {
         if (platform.inputFrame != null) {
             platform.inputFrame.dispose();
         }
-        if (j2me != null) {
-            j2me.notifyDestroy();
+        if (j2meSandBox != null) {
+            j2meSandBox.notifyDestroy();
         }
     }
 }

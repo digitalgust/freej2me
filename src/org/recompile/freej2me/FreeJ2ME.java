@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
 
-public class FreeJ2ME extends J2meLoader {
+public class FreeJ2ME extends J2meSandBox {
     public static void main(String args[]) {
         FreeJ2ME app = new FreeJ2ME(args);
 //		FreeJ2ME app1 = new FreeJ2ME(args);
@@ -269,15 +269,24 @@ public class FreeJ2ME extends J2meLoader {
     }
 
 
+    public void repaintRequest() {
+        synchronized (events) {
+            events.notify();
+        }
+    }
+
     /**
      * 处理事件
      */
     void processEvent() {
         while (!exit) {
+            if (getMobile().getDisplay().getCurrent() instanceof javax.microedition.lcdui.Canvas) {
+                ((javax.microedition.lcdui.Canvas) getMobile().getDisplay().getCurrent()).serviceRepaints();
+            }
             if (events.isEmpty()) {
                 synchronized (events) {
                     try {
-                        events.wait();
+                        events.wait(200);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
@@ -655,7 +664,7 @@ public class FreeJ2ME extends J2meLoader {
         lcd.updateScale((int) nw, (int) nh);
     }
 
-    private class LCD extends Canvas {
+    private class LCD extends java.awt.Canvas {
         public int cx = 0;
         public int cy = 0;
         public int cw = 240;

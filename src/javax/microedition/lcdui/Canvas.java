@@ -46,6 +46,8 @@ public abstract class Canvas extends Displayable {
     public static final int KEY_STAR = 42;
     public static final int KEY_POUND = 35;
 
+    boolean repaintRequested = false;
+    int repaintX, repaintY, repaintWidth, repaintHeight;
 
     protected Canvas() {
         width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
@@ -210,42 +212,49 @@ public abstract class Canvas extends Displayable {
     }
 
     public synchronized void repaint() {
-        //检查是否存在循环调用(repaint->paint->repaint...)，造成堆栈溢出
-        Throwable t = new Throwable();
-        StackTraceElement[] stack = t.getStackTrace();
-        for (int i = 1; i < stack.length; i++) {
-            if ("javax.microedition.lcdui.Canvas".equals(stack[i].getClassName()) && stack[i].getMethodName().equals("repaint")) {
-                return;
-            }
-        }
+//        //检查是否存在循环调用(repaint->paint->repaint...)，造成堆栈溢出
+//        Throwable t = new Throwable();
+//        StackTraceElement[] stack = t.getStackTrace();
+//        for (int i = 1; i < stack.length; i++) {
+//            if ("javax.microedition.lcdui.Canvas".equals(stack[i].getClassName()) && stack[i].getMethodName().equals("repaint")) {
+//                return;
+//            }
+//        }
+
+        repaintRequested = true;
+        repaintX = 0;
+        repaintY = 0;
+        repaintWidth = width;
+        repaintHeight = height;
+        FreeJ2ME.getMobile().getJ2meSandBox().requestRepaint();
+    }
+
+    public synchronized void repaint(int x, int y, int pwidth, int pheight) {
+        repaintRequested = true;
+        repaintX = x;
+        repaintY = y;
+        repaintWidth = pwidth;
+        repaintHeight = pheight;
+        FreeJ2ME.getMobile().getJ2meSandBox().requestRepaint();
+    }
+
+    public void serviceRepaints() {
+        if (!repaintRequested) return;
+        repaintRequested = false;
+
         PlatformGraphics graphics;
         try {
             if (FreeJ2ME.getMobile().getDisplay().getCurrent() == this) {
                 graphics = platformImage.getGraphics();
                 graphics.reset();
                 paint(graphics);
-                FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
-
+                FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, repaintX, repaintY, repaintWidth, repaintHeight);
             }
         } catch (Exception e) {
             System.out.print("Canvas repaint(): " + e.getMessage());
             e.printStackTrace();
         }
-    }
 
-    public synchronized void repaint(int x, int y, int width, int height) {
-        PlatformGraphics graphics = platformImage.getGraphics();
-        graphics.reset();
-        paint(graphics);
-        if (FreeJ2ME.getMobile().getDisplay().getCurrent() == this) {
-            FreeJ2ME.getMobile().getPlatform().repaint(platformImage, x, y, width, height);
-        }
-    }
-
-    public void serviceRepaints() {
-        if (FreeJ2ME.getMobile().getDisplay().getCurrent() == this) {
-            FreeJ2ME.getMobile().getPlatform().repaint(platformImage, 0, 0, width, height);
-        }
     }
 
     public void setFullScreenMode(boolean mode) {
