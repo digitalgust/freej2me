@@ -37,7 +37,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     public PlatformGraphics platformGraphics;
     public PlatformImage platformImage;
 
-    ThreadLocal<Rectangle> clipRect = ThreadLocal.withInitial(() -> new Rectangle());
+    ThreadLocal<Rectangle> cliplv = ThreadLocal.withInitial(() -> new Rectangle());
 
     public PlatformGraphics(PlatformImage image) {
         canvas = image.getCanvas();
@@ -95,13 +95,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     }
 
     public void drawChars(char[] data, int offset, int length, int x, int y, int anchor) {
-        char[] str = new char[length];
-        for (int i = offset; i < offset + length; i++) {
-            if (i >= 0 && i < data.length) {
-                str[i - offset] = data[i];
-            }
-        }
-        drawString(new String(str), x, y, anchor);
+        drawString(new String(data, offset, length), x, y, anchor);
     }
 
     public void drawImage(javax.microedition.lcdui.Image image, int x, int y, int anchor) {
@@ -112,15 +106,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
             x = AnchorX(x, imgWidth, anchor);
             y = AnchorY(y, imgHeight, anchor);
 
-            if (this.canvas.getWidth() > 240) {
-                int debug = 1;
-                //setClip(x,y,imgWidth,imgHeight);
-            }
-//            if (image.platformImage.getCanvas() == canvas) {
-//                int debug = 1;
-//            }
             boolean b = gc.drawImage(image.platformImage.getCanvas(), x, y, null);
-            int debug = 1;
         } catch (Exception e) {
             System.out.println("drawImage A:" + e.getMessage());
         }
@@ -130,7 +116,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         try {
             gc.drawImage(image.platformImage.getCanvas(), x, y, null);
         } catch (Exception e) {
-            System.out.println("drawImage B:" + e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -213,14 +199,8 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
      */
     public void drawRegion(Image image, int subx, int suby, int subw, int subh, int transform, int x, int y, int anchor) {
 
-//        if (image.platformImage.getCanvas() == canvas) {
-//            int debug = 1;
-//        }
-//        if (image.platformImage.getCanvas().getWidth() > 100) {
-//            int debug = 1;
-//        }
-        Rectangle clipRect = new Rectangle();
-        gc.getClipBounds(clipRect);
+        Rectangle r = cliplv.get();
+        gc.getClipBounds(r);
         PlatformImageTransform pt = PlatformImage.midpTransformImage(image.platformImage.getCanvas(), subx, suby, subw, subh, transform);
 
         int imgx = x - pt.regionX;
@@ -228,11 +208,11 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         int transX = AnchorX(imgx, pt.regionWidth, anchor);
         int transY = AnchorY(imgy, pt.regionHeight, anchor);
         gc.translate(transX, transY);
-        gc.setClip(pt.regionX, pt.regionY, pt.regionWidth, pt.regionHeight);
+        gc.clipRect(pt.regionX, pt.regionY, pt.regionWidth, pt.regionHeight);
         gc.drawImage(image.platformImage.getCanvas(), pt.transform, null);
 //        gc.drawRect(pt.regionX, pt.regionY, pt.regionWidth, pt.regionHeight);
         gc.translate(-transX, -transY);
-        Rectangle rect = clipRect;
+        Rectangle rect = r;
         gc.setClip(rect.x, rect.y, rect.width, rect.height);
     }
 
@@ -346,7 +326,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
     public void setClip(int x, int y, int width, int height) {
         gc.setClip(x, y, width, height);
-        Rectangle rect = new Rectangle();
+        Rectangle rect = cliplv.get();
         gc.getClipBounds(rect);
         clipX = (int) rect.getX();
         clipY = (int) rect.getY();
@@ -356,7 +336,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
     public void clipRect(int x, int y, int width, int height) {
         gc.clipRect(x, y, width, height);
-        Rectangle rect = new Rectangle();
+        Rectangle rect = cliplv.get();
         gc.getClipBounds(rect);
         clipX = (int) rect.getX();
         clipY = (int) rect.getY();
@@ -371,7 +351,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         translateX += x;
         translateY += y;
         gc.translate(x, y);
-        Rectangle rect = new Rectangle();
+        Rectangle rect = cliplv.get();
         gc.getClipBounds(rect);
         clipX = (int) rect.getX();
         clipY = (int) rect.getY();
@@ -486,7 +466,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
                 temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 temp.setRGB(0, 0, width, height, data, 0, width);
-                pt = PlatformImage.nokiaTransformImage(temp, manipulation);
+//                pt = PlatformImage.nokiaTransformImage(temp, manipulation);
 //                bi = PlatformImage.getTransformedImage(temp, pt);
 //                gc.drawImage(bi, x, y, null);
                 drawImageNokia(temp, x, y, 0, manipulation);
@@ -506,7 +486,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
                 }
                 temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
                 temp.setRGB(0, 0, width, height, data, 0, scanlength);
-                pt = PlatformImage.nokiaTransformImage(temp, manipulation);
+//                pt = PlatformImage.nokiaTransformImage(temp, manipulation);
 //                bi = PlatformImage.getTransformedImage(temp, pt);
 //                gc.drawImage(bi, x, y, null);
                 drawImageNokia(temp, x, y, 0, manipulation);
@@ -521,7 +501,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         //System.out.println("drawPixels B "+format+" "+transparency); // Found In Use
         BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         temp.setRGB(0, 0, width, height, pixels, offset, scanlength);
-        PlatformImageTransform pt = PlatformImage.nokiaTransformImage(temp, manipulation);
+//        PlatformImageTransform pt = PlatformImage.nokiaTransformImage(temp, manipulation);
 //        BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
 //        gc.drawImage(temp2, x, y, null);
         drawImageNokia(temp, x, y, 0, manipulation);
@@ -537,7 +517,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
         BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         temp.setRGB(0, 0, width, height, data, offset, scanlength);
-        PlatformImageTransform pt = PlatformImage.nokiaTransformImage(temp, manipulation);
+//        PlatformImageTransform pt = PlatformImage.nokiaTransformImage(temp, manipulation);
 //        BufferedImage temp2 = PlatformImage.getTransformedImage(temp, pt);
 //        gc.drawImage(temp2, x, y, null);
         drawImageNokia(temp, x, y, 0, manipulation);
