@@ -231,7 +231,7 @@ public class Libretro extends J2meSandBox
 									else
 									{
 										System.out.println("Couldn't load jar...");
-										System.exit(0);
+										//System.exit(0);
 									}
 								break;
 
@@ -284,7 +284,7 @@ public class Libretro extends J2meSandBox
 									catch (Exception e)
 									{
 										System.out.print("Error sending frame: "+e.getMessage());
-										System.exit(0);
+										//System.exit(0);
 									}
 
 								break;
@@ -294,7 +294,7 @@ public class Libretro extends J2meSandBox
 						}
 					}
 				}
-				catch (Exception e) { System.exit(0); }
+				catch (Exception e) { /*System.exit(0);*/ }
 			}
 		} // timer
 	} // LibretroIO

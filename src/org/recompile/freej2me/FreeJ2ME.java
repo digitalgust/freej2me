@@ -280,13 +280,17 @@ public class FreeJ2ME extends J2meSandBox {
      */
     void processEvent() {
         while (!exit) {
-            if (getMobile().getDisplay().getCurrent() instanceof javax.microedition.lcdui.Canvas) {
-                ((javax.microedition.lcdui.Canvas) getMobile().getDisplay().getCurrent()).serviceRepaints();
+            try {
+                if (getMobile().getDisplay() != null && getMobile().getDisplay().getCurrent() instanceof javax.microedition.lcdui.Canvas) {
+                    ((javax.microedition.lcdui.Canvas) getMobile().getDisplay().getCurrent()).serviceRepaints();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
             if (events.isEmpty()) {
                 synchronized (events) {
                     try {
-                        events.wait(200);
+                        events.wait(30);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }

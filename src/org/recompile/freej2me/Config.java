@@ -352,7 +352,7 @@ public class Config
 					case 3: menuid=6; itemid=0; break; // fps
 					case 4: menuid=4; itemid=0; break; // phone
 					case 5: menuid=5; itemid=0; break; // rotate
-					case 6: System.exit(0); break;
+					case 6: stop(); break;
 				}
 			break;
 
@@ -367,7 +367,7 @@ public class Config
 			case 2: // Restart Required Notice
 				switch(itemid)
 				{
-					case 0: System.exit(0); break;
+					case 0: stop(); break;
 					case 1: menuid=0; itemid=0;
 				}
 			break;

@@ -4,7 +4,8 @@ Improvement:
 * Support network.
 * Support java.microedition.lcdui.TextField and java.microedition.lcdui.TextBox for input .
 * Support full of com.nokia.mid.ui.DirectGraphics.drawImage maniputation.
-* Fix java.microedition.lcdui package bugs.
+* Fixed java.microedition.lcdui package bugs.
+
 
 
 # freej2me

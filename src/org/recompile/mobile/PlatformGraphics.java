@@ -318,6 +318,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     }
 
     public void setFont(Font font) {
+        if (font == null) return;
         super.setFont(font);
         gc.setFont(font.platformFont.awtFont);
     }

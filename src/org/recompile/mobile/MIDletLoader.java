@@ -114,7 +114,7 @@ public class MIDletLoader extends URLClassLoader
 			System.out.println("Problem Constructing " + name + " class: " +className);
 			System.out.println("Reason: "+e.getMessage());
 			e.printStackTrace();
-			System.exit(0);
+			//System.exit(0);
 			return;
 		}
 
@@ -135,7 +135,7 @@ public class MIDletLoader extends URLClassLoader
 			{
 				System.out.println("Can't Find startApp Method");
 				f.printStackTrace();
-				System.exit(0);
+				//System.exit(0);
 				return;
 			}
 		}
@@ -147,7 +147,7 @@ public class MIDletLoader extends URLClassLoader
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			System.exit(0);
+			//System.exit(0);
 		}
 	}
 
@@ -170,8 +170,8 @@ public class MIDletLoader extends URLClassLoader
 					if(url==null)
 					{
 						return;
-					}	
-				}	
+					}
+				}
 			}
 		}
 
@@ -182,19 +182,25 @@ public class MIDletLoader extends URLClassLoader
 		String value;
 		try
 		{
-			InputStream is = url.openStream();
-			BufferedReader br = new BufferedReader(new InputStreamReader(is,"utf-8"));
-			
-			ArrayList<String> lines = new ArrayList<String>();
-			while ((line = br.readLine()) != null) 
-			{
-				if(line.startsWith(" "))
-				{
-					line = lines.get(lines.size()-1) + line.trim();
-					lines.remove(lines.size()-1);
-				}
-				lines.add(line);
-			}
+            InputStream is = url.openStream();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            int ch = is.read();
+            while (ch != -1) {
+                baos.write(ch);
+                ch = is.read();
+            }
+            String manifest = new String(baos.toByteArray(), "UTF-8");
+            String[] strs = manifest.split("\n");
+
+            ArrayList<String> lines = new ArrayList<String>();
+            for (int i = 0; i < strs.length; i++) {
+                line = strs[i].trim();
+                if (line.startsWith(" ")) {
+                    line = lines.get(lines.size() - 1) + line.trim();
+                    lines.remove(lines.size() - 1);
+                }
+                lines.add(line);
+            }
 
 			for (int i=0; i<lines.size(); i++)
 			{
@@ -436,7 +442,7 @@ public class MIDletLoader extends URLClassLoader
 	}
 
 
-/* ************************************************************** 
+/* **************************************************************
  * Instrumentation
  * ************************************************************** */
 

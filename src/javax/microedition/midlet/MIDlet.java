@@ -60,10 +60,10 @@ public abstract class MIDlet {
         for (Thread t : threads) {
             if (t == Thread.currentThread()) continue; // skip current thread
             System.out.println("Thread interrupted " + t);
-            t.interrupt();
+            t.stop();
         }
         //自己最后销毁，要不然上面的for都执行不完
-        Thread.currentThread().interrupt();
+        Thread.currentThread().stop();
     }
 
     public final void notifyPaused() {

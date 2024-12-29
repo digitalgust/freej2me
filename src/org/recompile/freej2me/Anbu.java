@@ -91,7 +91,7 @@ public class Anbu extends J2meSandBox {
             mobile.getPlatform().runJar();
         } else {
             System.out.println("Couldn't load jar...");
-            System.exit(0);
+            //System.exit(0);
         }
     }
 
@@ -102,7 +102,7 @@ public class Anbu extends J2meSandBox {
         File file = new File(loc);
         if (!file.exists() || file.isDirectory()) {
             System.out.println("File not found...");
-            System.exit(0);
+            //System.exit(0);
         }
 
         return "file://" + file.getAbsolutePath();
@@ -130,7 +130,7 @@ public class Anbu extends J2meSandBox {
             } catch (Exception e) {
                 System.out.println("Failed to start sdl_interface");
                 System.out.println(e.getMessage());
-                System.exit(0);
+                //System.exit(0);
             }
         }
 
@@ -280,11 +280,11 @@ public class Anbu extends J2meSandBox {
 
                 // F4 - Quit
                 case -1:
-                    System.exit(0);
+                    //System.exit(0);
 
                     // ESC - Quit
                 case 0x1B:
-                    System.exit(0);
+                    //System.exit(0);
 
                 case 112:
                     ScreenShot.takeScreenshot(true, mobile);
