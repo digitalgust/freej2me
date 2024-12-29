@@ -136,7 +136,7 @@ public class TextField extends Item {
         y += Displayable.ITEM_H;
         gc.setARGBColor(0x80d0d0d0);
         int tfw = w - 2;
-        int tfh = h - 1;
+        int tfh = h - Displayable.ITEM_H - 1;
         gc.fillRect(dx, y, tfw, tfh);
         gc.setARGBColor(0x80808080);
         gc.drawRect(dx, y, tfw, tfh);

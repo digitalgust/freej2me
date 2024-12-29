@@ -107,40 +107,19 @@ public class Form extends Screen {
 	*/
 
     public void keyPressed(int key) {
-        super.keyPressed(key);
-//		if(listCommands==true)
-//		{
-//			keyPressedCommands(key);
-//			return;
-//		}
-//
-//		if(items.size()<1) { return; }
-//		switch(key)
-//		{
-//			case Mobile.KEY_NUM2: currentItem--; break;
-//			case Mobile.KEY_NUM8: currentItem++; break;
-//			case Mobile.NOKIA_UP: currentItem--; break;
-//			case Mobile.NOKIA_DOWN: currentItem++; break;
-//			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
-//			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
-//			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
-//			case Mobile.KEY_NUM5: doDefaultCommand(); break;
-//		}
-//		if (currentItem>=items.size()) { currentItem=0; }
-//		if (currentItem<0) { currentItem = items.size()-1; }
-//		render();
 
         if (getCurrentItem() != null) {
             getCurrentItem().keyPressed(key);
             render();
         }
+        super.keyPressed(key);
     }
 
     public void keyReleased(int key) {
         if (!oneKeyPressed) {
             return;
         }
-        super.keyReleased(key);
+
         //
         if (listCommands) {
             keyPressedCommands(key);
@@ -181,11 +160,12 @@ public class Form extends Screen {
         if (getCurrentItem() != null) {
             getCurrentItem().keyReleased(key);
         }
+
+        super.keyReleased(key);
         render();
     }
 
     public void pointerPressed(int x, int y) {
-        super.pointerPressed(x, y);
 
         if (listCommands) {
             return;
@@ -199,40 +179,42 @@ public class Form extends Screen {
             render();
         }
 
+        super.pointerPressed(x, y);
     }
 
     public void pointerReleased(int x, int y) {
         if (!pointerPressed) {
             return;
         }
-        super.pointerReleased(x, y);
-
-        if (listCommands) {
-            int commandIdx = getCombinedCommandIndex(x, y);
-            if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
-                doCommand(commandIdx);
+        if (!pointerDraged) {
+            if (listCommands) {
+                int commandIdx = getCombinedCommandIndex(x, y);
+                if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
+                    doCommand(commandIdx);
+                }
+                int hit = getCommandHit(x, y);
+                if (hit == 0) {
+                    keyReleased(Mobile.NOKIA_SOFT1);
+                } else if (hit == 1) {
+                    keyReleased(Mobile.NOKIA_SOFT2);
+                }
+                return;
             }
-            int hit = getCommandHit(x, y);
-            if (hit == 0) {
-                keyReleased(Mobile.NOKIA_SOFT1);
-            } else if (hit == 1) {
-                keyReleased(Mobile.NOKIA_SOFT2);
-            }
-            return;
-        }
 
-        if (y > TITLE_H && y < height - TITLE_H) {
-            int itemIdx = getItemIndex(x, y);
-            if (itemIdx >= 0 && itemIdx < items.size()) {
-                int oldIndex = getCurrentIndex();
-                setCurrentIndex(itemIdx);
-                Item item = items.get(getCurrentIndex());
-                if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
-                    item.pointerReleased(x, y);
-                    doDefaultCommand();
+            if (y > TITLE_H && y < height - TITLE_H) {
+                int itemIdx = getItemIndex(x, y);
+                if (itemIdx >= 0 && itemIdx < items.size()) {
+                    int oldIndex = getCurrentIndex();
+                    setCurrentIndex(itemIdx);
+                    Item item = items.get(getCurrentIndex());
+                    if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
+                        item.pointerReleased(x, y);
+                        doDefaultCommand();
+                    }
                 }
             }
         }
+        super.pointerReleased(x, y);
         render();
     }
 

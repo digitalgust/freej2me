@@ -169,7 +169,6 @@ public class List extends Screen implements Choice {
         if (!oneKeyPressed) {
             return;
         }
-        super.keyReleased(key);
 
         if (items.size() < 1) {
             return;
@@ -201,11 +200,11 @@ public class List extends Screen implements Choice {
                 break;
             //case Mobile.KEY_NUM5: doDefaultCommand(); break;
         }
+        super.keyReleased(key);
         render();
     }
 
     public void pointerPressed(int x, int y) {
-        super.pointerPressed(x, y);
 
         if (listCommands) {
             return;
@@ -219,40 +218,44 @@ public class List extends Screen implements Choice {
             render();
         }
 
+        super.pointerPressed(x, y);
     }
 
     public void pointerReleased(int x, int y) {
         if (!pointerPressed) {
             return;
         }
-        super.pointerReleased(x, y);
+        if (!pointerDraged) {
 
-        if (listCommands) {
-            int commandIdx = getCombinedCommandIndex(x, y);
-            if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
-                doCommand(commandIdx);
+            if (listCommands) {
+                int commandIdx = getCombinedCommandIndex(x, y);
+                if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
+                    doCommand(commandIdx);
+                }
+                int hit = getCommandHit(x, y);
+                if (hit == 0) {
+                    keyReleased(Mobile.NOKIA_SOFT1);
+                } else if (hit == 1) {
+                    keyReleased(Mobile.NOKIA_SOFT2);
+                }
+                return;
             }
-            int hit = getCommandHit(x, y);
-            if (hit == 0) {
-                keyReleased(Mobile.NOKIA_SOFT1);
-            } else if (hit == 1) {
-                keyReleased(Mobile.NOKIA_SOFT2);
-            }
-            return;
-        }
 
-        if (y > TITLE_H && y < height - TITLE_H) {
-            int itemIdx = getItemIndex(x, y);
-            if (itemIdx >= 0 && itemIdx < items.size()) {
-                int oldIndex = getCurrentIndex();
-                setCurrentIndex(itemIdx);
-                Item item = items.get(getCurrentIndex());
-                if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
-                    item.pointerReleased(x, y);
-                    doDefaultCommand();
+            if (y > TITLE_H && y < height - TITLE_H) {
+                int itemIdx = getItemIndex(x, y);
+                if (itemIdx >= 0 && itemIdx < items.size()) {
+                    int oldIndex = getCurrentIndex();
+                    setCurrentIndex(itemIdx);
+                    Item item = items.get(getCurrentIndex());
+                    if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
+                        item.pointerReleased(x, y);
+                        doDefaultCommand();
+                    }
                 }
             }
         }
+
+        super.pointerReleased(x, y);
         render();
     }
 

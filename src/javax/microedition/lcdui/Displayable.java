@@ -60,8 +60,10 @@ public abstract class Displayable {
     protected Command options, optionsLeft, optionsRight;
 
     protected boolean oneKeyPressed = false;
-    public boolean pointerPressed = false;
-    public boolean pointerDraged = false;
+    protected boolean pointerPressed = false;
+    protected boolean pointerDraged = false;
+    protected int dragX = 0;
+    protected int dragY = 0;
 
     public Displayable() {
         width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
@@ -154,10 +156,19 @@ public abstract class Displayable {
 
     public void pointerDragged(int x, int y) {
         pointerDraged = true;
+        if (pointerPressed) {
+            int oldY = dragY;
+            dragX = x;
+            dragY = y;
+
+            setScollPos(getScollPos() - ((dragY - oldY) / (float) getScrollHeight()));
+        }
     }
 
     public void pointerPressed(int x, int y) {
         pointerPressed = true;
+        dragX = x;
+        dragY = y;
     }
 
     public void pointerReleased(int x, int y) {
@@ -684,28 +695,27 @@ public abstract class Displayable {
         int old = this.currentIndex;
         this.currentIndex = currentIndex;
 
-        int totalHeight = getScrollHeight();
-        int oldTop = (int) (totalHeight * scrollPos);
+        int scrollHeight = getScrollHeight();
+        int curScreenTop = (int) (scrollHeight * scrollPos);
+        int mainH = getMainAreaHeight();
+        int curScreenBottom = curScreenTop + mainH;
         int newItemTop = getItemTop(currentIndex);
         int newItemBottom = newItemTop + items.get(currentIndex).getHeight();
-        int mainY = getMainAreaY();
-        int mainH = getMainAreaHeight();
-        int mainB = mainY + mainH;
         //如果整个item都显示在mainarea则不变化
-        if (newItemTop >= oldTop + mainY && newItemBottom <= oldTop + mainB) {
-            setScollPos((float) (oldTop) / totalHeight);//不变化
+        if (newItemTop >= curScreenTop && newItemBottom <= curScreenBottom) {
+            setScollPos((float) (curScreenTop) / scrollHeight);//不变化
         } else {
             if (old < this.currentIndex) {//向下滚动
-                if (newItemBottom > mainH) {
-                    setScollPos((float) (newItemBottom - mainH) / totalHeight);
+                if (newItemBottom > curScreenBottom) {
+                    setScollPos((float) (newItemBottom - mainH) / scrollHeight);
                 } else {
-                    setScollPos((float) (newItemTop) / totalHeight);
+                    setScollPos((float) (newItemTop) / scrollHeight);
                 }
             } else if (old > this.currentIndex) {//向上滚动
                 if (newItemTop < 0) {
-                    setScollPos((float) (newItemTop) / totalHeight);
+                    setScollPos((float) (newItemTop) / scrollHeight);
                 } else {
-                    setScollPos((float) (newItemBottom - mainH) / totalHeight);
+                    setScollPos((float) (newItemBottom - mainH) / scrollHeight);
                 }
             }
         }
