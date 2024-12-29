@@ -194,9 +194,11 @@ public abstract class Item {
 
     /**
      * Need double click to active item firekey
+     *
      * @return
      */
     boolean needDoubleClick() {
         return false;
     }
+
 }

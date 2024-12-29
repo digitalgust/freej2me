@@ -17,40 +17,72 @@
 package javax.microedition.lcdui;
 
 
-public class StringItem extends Item
-{
+import org.recompile.freej2me.FreeJ2ME;
+import org.recompile.mobile.PlatformGraphics;
 
-	private String text;
-	private int appearance;
-	private Font font;
+import java.util.Vector;
+
+public class StringItem extends Item {
+
+    private String text;
+    private int appearance;
+    private Font font;
+    Vector<String> subSections;
 
 
-	public StringItem(String label, String textvalue)
-	{
-		setLabel(label);
-		text = textvalue;
-		font = Font.getDefaultFont();
-	}
+    public StringItem(String label, String textvalue) {
+        setLabel(label);
+        text = textvalue;
+        font = Font.getDefaultFont();
+        int screenW = FreeJ2ME.getMobile().getDisplay().getCurrent().getWidth();
+        subSections = Displayable.getSubSection(text, font, screenW, null);
+    }
 
-	public StringItem(String label, String textvalue, int appearanceMode)
-	{
-		setLabel(label);
-		text = textvalue;
-		appearance = appearanceMode;
-		font = Font.getDefaultFont();
-	}
+    public StringItem(String label, String textvalue, int appearanceMode) {
+        setLabel(label);
+        text = textvalue;
+        appearance = appearanceMode;
+        font = Font.getDefaultFont();
+        int screenW = FreeJ2ME.getMobile().getDisplay().getCurrent().getWidth();
+        subSections = Displayable.getSubSection(text, font, screenW, null);
+    }
 
-	public int getAppearanceMode() { return appearance; }
+    public int getAppearanceMode() {
+        return appearance;
+    }
 
-	public Font getFont() { return font; }
+    public Font getFont() {
+        return font;
+    }
 
-	public String getText() { return text; }
+    public String getText() {
+        return text;
+    }
 
-	public void setFont(Font newfont) { font = newfont; }
+    public void setFont(Font newfont) {
+        font = newfont;
+    }
 
-	public void setText(String textvalue) { text = textvalue; }
+    public void setText(String textvalue) {
+        text = textvalue;
+    }
 
-	protected String getString() {
-		return text;
-	}
+    protected String getString() {
+        return text;
+    }
+
+
+    @Override
+    public int getPreferredHeight() {
+        return subSections.size() * Displayable.ITEM_H;
+    }
+
+
+    @Override
+    protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
+        for (String s : subSections) {
+            gc.drawString(s, x, y, Graphics.TOP | Graphics.LEFT);
+            y += Displayable.ITEM_H;
+        }
+    }
 }

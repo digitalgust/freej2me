@@ -23,185 +23,217 @@ import org.recompile.mobile.PlatformGraphics;
 import org.recompile.mobile.PlatformImage;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
-public class TextBox extends Screen
-{
+public class TextBox extends Screen {
 
-	private String text;
-	private int max;
-	private int constraints;
-	private String mode;
-	private Ticker ticker;
-
-
-	public TextBox(String Title, String value, int maxSize, int Constraints)
-	{
-		title = Title;
-		text = value;
-		max = maxSize;
-		constraints = Constraints;
-		platformImage = new PlatformImage(width, height);
-	}
-
-	public void delete(int offset, int length)
-	{
-		text = text.substring(0, offset) + text.substring(offset+length);
-		render();
-	}
-
-	public int getCaretPosition() { return 0; }
-
-	public int getChars(char[] data)
-	{
-		for(int i=0; i<text.length(); i++)
-		{
-			data[i] = text.charAt(i);
-		}
-		return text.length();
-	}
-
-	public int getConstraints() { return constraints; }
-
-	public int getMaxSize() { return max; }
-
-	public String getString() { return text; }
-
-	@Override
-	public String getTitle() {
-		return title;
-	}
-
-	public void insert(char[] data, int offset, int length, int position)
-	{
-		StringBuilder out = new StringBuilder();
-		out.append(text, 0, position);
-		out.append(data, offset, length);
-		out.append(text.substring(position));
-		text = out.toString();
-		render();
-	}
-
-	public void insert(String src, int position)
-	{
-		StringBuilder out = new StringBuilder();
-		out.append(text, 0, position);
-		out.append(src);
-		out.append(text.substring(position));
-		text = out.toString();
-		render();
-	}
-
-	public void setChars(char[] data, int offset, int length)
-	{
-		StringBuilder out = new StringBuilder();
-		out.append(data, offset, length);
-		text = out.toString();
-		render();
-	}
-
-	public void setConstraints(int Constraints) { constraints = Constraints;  }
-
-	public void setInitialInputMode(String characterSubset) { mode = characterSubset; }
-
-	public int setMaxSize(int maxSize) { max = maxSize; return max; }
-
-	public void setString(String value) { text = value; render();}
-
-	public void setTicker(Ticker tick) { ticker = tick; }
-
-	public void setTitle(String s) { title = s; render();}
-
-	public int size() { return text.length(); }
+    private String text;
+    private int max;
+    private int constraints;
+    private String mode;
+    private Ticker ticker;
 
 
-	public void keyReleased(int key)
-	{
-		if(listCommands==true)
-		{
-			keyPressedCommands(key);
-			return;
-		}
+    public TextBox(String Title, String value, int maxSize, int Constraints) {
+        title = Title;
+        text = value;
+        max = maxSize;
+        constraints = Constraints;
+        platformImage = new PlatformImage(width, height);
+    }
 
-		switch(key)
-		{
-			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
-			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
-			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
-			case Mobile.KEY_NUM0:
-			case Mobile.KEY_NUM1:
-			case Mobile.KEY_NUM2:
-			case Mobile.KEY_NUM3:
-			case Mobile.KEY_NUM4:
-			case Mobile.KEY_NUM5:
-			case Mobile.KEY_NUM6:
-			case Mobile.KEY_NUM7:
-			case Mobile.KEY_NUM8:
-			case Mobile.KEY_NUM9:
-			case Mobile.KEY_STAR:
-			case Mobile.KEY_POUND: doDefaultCommand(); break;
-		}
-		render();
-	}
+    public void delete(int offset, int length) {
+        text = text.substring(0, offset) + text.substring(offset + length);
+        render();
+    }
 
-	protected void doDefaultCommand() {
+    public int getCaretPosition() {
+        return 0;
+    }
+
+    public int getChars(char[] data) {
+        for (int i = 0; i < text.length(); i++) {
+            data[i] = text.charAt(i);
+        }
+        return text.length();
+    }
+
+    public int getConstraints() {
+        return constraints;
+    }
+
+    public int getMaxSize() {
+        return max;
+    }
+
+    public String getString() {
+        return text;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    public void insert(char[] data, int offset, int length, int position) {
+        StringBuilder out = new StringBuilder();
+        out.append(text, 0, position);
+        out.append(data, offset, length);
+        out.append(text.substring(position));
+        text = out.toString();
+        render();
+    }
+
+    public void insert(String src, int position) {
+        StringBuilder out = new StringBuilder();
+        out.append(text, 0, position);
+        out.append(src);
+        out.append(text.substring(position));
+        text = out.toString();
+        render();
+    }
+
+    public void setChars(char[] data, int offset, int length) {
+        StringBuilder out = new StringBuilder();
+        out.append(data, offset, length);
+        text = out.toString();
+        render();
+    }
+
+    public void setConstraints(int Constraints) {
+        constraints = Constraints;
+    }
+
+    public void setInitialInputMode(String characterSubset) {
+        mode = characterSubset;
+    }
+
+    public int setMaxSize(int maxSize) {
+        max = maxSize;
+        return max;
+    }
+
+    public void setString(String value) {
+        text = value;
+        render();
+    }
+
+    public void setTicker(Ticker tick) {
+        ticker = tick;
+    }
+
+    public void setTitle(String s) {
+        title = s;
+        render();
+    }
+
+    public int size() {
+        return text.length();
+    }
+
+
+    public void keyReleased(int key) {
+        if (!oneKeyPressed) {
+            return;
+        }
+        super.keyReleased(key);
+
+        if (listCommands == true) {
+            keyPressedCommands(key);
+            return;
+        }
+
+        switch (key) {
+            case Mobile.NOKIA_SOFT1:
+                doLeftCommand();
+                break;
+            case Mobile.NOKIA_SOFT2:
+                doRightCommand();
+                break;
+            case Mobile.NOKIA_SOFT3:
+                doDefaultCommand();
+                break;
+            case Mobile.KEY_NUM0:
+            case Mobile.KEY_NUM1:
+            case Mobile.KEY_NUM2:
+            case Mobile.KEY_NUM3:
+            case Mobile.KEY_NUM4:
+            case Mobile.KEY_NUM5:
+            case Mobile.KEY_NUM6:
+            case Mobile.KEY_NUM7:
+            case Mobile.KEY_NUM8:
+            case Mobile.KEY_NUM9:
+            case Mobile.KEY_STAR:
+            case Mobile.KEY_POUND:
+                doDefaultCommand();
+                break;
+        }
+        render();
+    }
+
+    protected void doDefaultCommand() {
 
         if (FreeJ2ME.getMobile().getPlatform().getInputFrame() == null) {
             FreeJ2ME.getMobile().getPlatform().openInputFrame(null, this, text);
         }
     }
 
-	public void pointerReleased(int x, int y) {
-		super.pointerReleased(x, y);
-		//
+    public void pointerReleased(int x, int y) {
+        super.pointerReleased(x, y);
+        //
 
-		ArrayList<Command> cmds = getCombinedCommands();
-		for (int i = 0; i < cmds.size(); i++) {
-			Command c = cmds.get(i);
-			if (c.isInRange(x, y)) {
-				doCommand(i);
-				currentCommand = i;
-				render();
-				return;
-			}
-		}
-		if (!listCommands) {
-			if (options != null) {
-				if (options.isInRange(x, y)) {
-					listCommands = true;
-					render();
-					return;
-				}
-			}
-			doDefaultCommand();//open text input
-		} else {
-			if (optionsLeft != null && optionsLeft.isInRange(x, y)) {
-				doLeftCommand();
-				render();
-			} else if (optionsRight != null && optionsRight.isInRange(x, y)) {
-				doRightCommand();
-				render();
-			}
-		}
-	}
+        ArrayList<Command> cmds = getCombinedCommands();
+        for (int i = 0; i < cmds.size(); i++) {
+            Command c = cmds.get(i);
+            if (c.isInRange(x, y)) {
+                doCommand(i);
+                currentCommand = i;
+                render();
+                return;
+            }
+        }
+        if (!listCommands) {
+            if (options != null) {
+                if (options.isInRange(x, y)) {
+                    listCommands = true;
+                    render();
+                    return;
+                }
+            }
+            doDefaultCommand();//open text input
+        } else {
+            if (optionsLeft != null && optionsLeft.isInRange(x, y)) {
+                doLeftCommand();
+                render();
+            } else if (optionsRight != null && optionsRight.isInRange(x, y)) {
+                doRightCommand();
+                render();
+            }
+        }
+    }
 
     public void pointerPressed(int x, int y) {
         super.pointerPressed(x, y);
     }
-	public void render()
-	{
-		super.render();
-		PlatformGraphics gc = platformImage.getGraphics();
-		gc.setClip(0, 0, width, height);
+
+    public void render() {
+        super.render();
+        PlatformGraphics gc = platformImage.getGraphics();
+        gc.setClip(0, 0, width, height);
         if (text == null || text.length() == 0) {
             gc.setColor(0xffc0c0c0);
             gc.drawString("press ENTER", 3, 30, Graphics.LEFT | Graphics.TOP);
         } else {
             gc.setColor(0xff000000);
-            gc.drawString(text, 3, 30, Graphics.LEFT | Graphics.TOP);
+            int y = 30;
+            Vector<String> subSections = getSubSection(text, Font.getDefaultFont(), width - 6, "");
+            for (String s : subSections) {
+                gc.drawString(s, 3, y, Graphics.TOP | Graphics.LEFT);
+                y += Displayable.ITEM_H;
+            }
         }
-        if (this.getDisplay().getCurrent() == this)
-		{
-			FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, 0, 0, width, height);
-		}
-	}
+        if (this.getDisplay().getCurrent() == this) {
+            FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, 0, 0, width, height);
+        }
+    }
 }

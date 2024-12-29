@@ -107,6 +107,7 @@ public class Form extends Screen {
 	*/
 
     public void keyPressed(int key) {
+        super.keyPressed(key);
 //		if(listCommands==true)
 //		{
 //			keyPressedCommands(key);
@@ -136,6 +137,11 @@ public class Form extends Screen {
     }
 
     public void keyReleased(int key) {
+        if (!oneKeyPressed) {
+            return;
+        }
+        super.keyReleased(key);
+        //
         if (listCommands) {
             keyPressedCommands(key);
             return;
@@ -144,19 +150,20 @@ public class Form extends Screen {
         if (items.size() < 1) {
             return;
         }
+        Item item = getCurrentItem();
+        int curScreenTop = (int) (getScrollHeight() * getScollPos());
+        int curScreenBottom = curScreenTop + getMainAreaHeight();
+        int curItemTop = item == null ? curScreenTop : getItemTop(getCurrentIndex());
+        int curItemBottom = item == null ? curScreenTop : curItemTop + item.getHeight();
         switch (key) {
-            //case Mobile.KEY_NUM2: currentItem--; break;
-            //case Mobile.KEY_NUM8: currentItem++; break;
             case Mobile.NOKIA_UP:
-                currentIndex--;
-                if (currentIndex < 0) {
-                    currentIndex = items.size() - 1;
+                if (curItemTop >= curScreenTop) {
+                    setCurrentIndex(getCurrentIndex() - 1);
                 }
                 break;
             case Mobile.NOKIA_DOWN:
-                currentIndex++;
-                if (currentIndex >= items.size()) {
-                    currentIndex = 0;
+                if (curItemBottom <= curScreenBottom) {
+                    setCurrentIndex(getCurrentIndex() + 1);
                 }
                 break;
             case Mobile.NOKIA_SOFT1:
@@ -177,29 +184,6 @@ public class Form extends Screen {
         render();
     }
 
-    int getItemIndex(int x, int y) {
-        for (int i = 0; i < items.size(); i++) {
-            Item item = items.get(i);
-            if (item != null) {
-                if (item.isInRange(x, y)) return i;
-            }
-        }
-        return -1;
-    }
-
-    int getCombinedCommandIndex(int x, int y) {
-        if (FreeJ2ME.getMobile().getDisplay().getCurrent() != this) {
-            return -1;
-        }
-        for (int i = 0; i < combinedCommands.size(); i++) {
-            Command cmd = combinedCommands.get(i);
-            if (cmd != null) {
-                if (cmd.isInRange(x, y)) return i;
-            }
-        }
-        return -1;
-    }
-
     public void pointerPressed(int x, int y) {
         super.pointerPressed(x, y);
 
@@ -209,8 +193,8 @@ public class Form extends Screen {
 
         int itemIdx = getItemIndex(x, y);
         if (itemIdx >= 0 && itemIdx < items.size()) {
-            if (currentIndex == itemIdx) {
-                items.get(currentIndex).pointerPressed(x, y);
+            if (getCurrentIndex() == itemIdx) {
+                items.get(getCurrentIndex()).pointerPressed(x, y);
             }
             render();
         }
@@ -218,6 +202,9 @@ public class Form extends Screen {
     }
 
     public void pointerReleased(int x, int y) {
+        if (!pointerPressed) {
+            return;
+        }
         super.pointerReleased(x, y);
 
         if (listCommands) {
@@ -234,24 +221,17 @@ public class Form extends Screen {
             return;
         }
 
-        int itemIdx = getItemIndex(x, y);
-        if (itemIdx >= 0 && itemIdx < items.size()) {
-            int oldIndex = currentIndex;
-            currentIndex = itemIdx;
-            Item item = items.get(currentIndex);
-            if (oldIndex == currentIndex || !item.needDoubleClick()) {
-                item.pointerReleased(x, y);
-                doDefaultCommand();
+        if (y > TITLE_H && y < height - TITLE_H) {
+            int itemIdx = getItemIndex(x, y);
+            if (itemIdx >= 0 && itemIdx < items.size()) {
+                int oldIndex = getCurrentIndex();
+                setCurrentIndex(itemIdx);
+                Item item = items.get(getCurrentIndex());
+                if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
+                    item.pointerReleased(x, y);
+                    doDefaultCommand();
+                }
             }
-        } else {
-
-            int hit = getCommandHit(x, y);
-            if (hit == 0) {
-                keyReleased(Mobile.NOKIA_SOFT1);
-            } else if (hit == 1) {
-                keyReleased(Mobile.NOKIA_SOFT2);
-            }
-            render();
         }
         render();
     }

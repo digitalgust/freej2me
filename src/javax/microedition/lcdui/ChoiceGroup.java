@@ -156,7 +156,6 @@ public class ChoiceGroup extends Item implements Choice {
     }
 
     protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
-        int cx = x;
         int color = gc.getColor();
         for (int c = 0; c < size(); c++) {
             if (c == selectedIndex) {
@@ -164,15 +163,17 @@ public class ChoiceGroup extends Item implements Choice {
             } else {
                 gc.setColor(0xff808080);
             }
+            int cx = x;
+            int boxw = Displayable.ITEM_H;
             if (type == MULTIPLE) {
-                drawRect(gc, cx, y + 2, h - 4, h - 4, selectedFlags[c]);
+                drawRect(gc, cx, y + 2, boxw - 4, boxw - 4, selectedFlags[c]);
             } else if (type == EXCLUSIVE) {
-                drawCircle(gc, cx, y + 2, h - 4, h - 4, selectedIndex == c);
+                drawCircle(gc, cx, y + 2, boxw - 4, boxw - 4, selectedIndex == c);
             }
-            cx += h;
+            cx = Displayable.ITEM_H;
             gc.drawString(getString(c), cx, y, Graphics.LEFT | Graphics.TOP);
             gc.setColor(color);
-            cx += gc.getFont().stringWidth(getString(c)) + 3;
+            y += Displayable.ITEM_H;
         }
     }
 
@@ -219,5 +220,10 @@ public class ChoiceGroup extends Item implements Choice {
 
     boolean needDoubleClick() {
         return true;
+    }
+
+    @Override
+    public int getPreferredHeight() {
+        return strings.size() * Displayable.ITEM_H;
     }
 }

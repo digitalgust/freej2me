@@ -124,20 +124,27 @@ public class TextField extends Item {
         FreeJ2ME.getMobile().getPlatform().openInputFrame(this, null, text);
     }
 
+    @Override
+    public int getPreferredHeight() {
+        return 2 * Displayable.ITEM_H;
+    }
+
+    @Override
     protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
         gc.drawString(getLabel(), x, y, Graphics.TOP | Graphics.LEFT);
-        int dx = Font.getDefaultFont().stringWidth(getLabel());
-        gc.setColor(0xffd0d0d0);
-        int tfw = w - dx - 2;
+        int dx = x;
+        y += Displayable.ITEM_H;
+        gc.setARGBColor(0x80d0d0d0);
+        int tfw = w - 2;
         int tfh = h - 1;
         gc.fillRect(dx, y, tfw, tfh);
-        gc.setColor(0xff808080);
+        gc.setARGBColor(0x80808080);
         gc.drawRect(dx, y, tfw, tfh);
         int cx = gc.getClipX();
         int cy = gc.getClipY();
         int cw = gc.getClipWidth();
         int ch = gc.getClipHeight();
-        gc.setClip(dx + 1, y + 1, tfw - 2, tfh - 2);
+//        gc.setClip(dx + 1, y + 1, tfw - 2, tfh - 2);
         if (text == null || text.length() == 0) {
             gc.setColor(0xff808080);
             gc.drawString("press ENTER", dx + 1, y + 1, Graphics.TOP | Graphics.LEFT);
@@ -146,6 +153,6 @@ public class TextField extends Item {
             gc.drawString(text, dx + 1, y + 1, Graphics.TOP | Graphics.LEFT);
         }
 
-        gc.setClip(cx, cy, cw, ch);
+//        gc.setClip(cx, cy, cw, ch);
     }
 }

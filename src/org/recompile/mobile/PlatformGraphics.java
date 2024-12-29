@@ -348,7 +348,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     //public int getTranslateX() { }
     //public int getTranslateY() { }
 
-    public void translate(int x, int y) {
+    public synchronized void translate(int x, int y) {
         translateX += x;
         translateY += y;
         gc.translate(x, y);
@@ -390,7 +390,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     }
 
     public void setAlphaRGB(int ARGB) {
-        gc.setColor(new Color(ARGB, true));
+        setARGBColor(ARGB);
     }
 
 	/*

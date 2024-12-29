@@ -19,187 +19,250 @@ package javax.microedition.lcdui;
 import org.recompile.mobile.Mobile;
 import org.recompile.mobile.PlatformImage;
 
-public class List extends Screen implements Choice
-{
+public class List extends Screen implements Choice {
 
-	public static Command SELECT_COMMAND = new Command("Select", Command.SCREEN, 0);
+    public static Command SELECT_COMMAND = new Command("Select", Command.SCREEN, 0);
 
-	private int fitPolicy = Choice.TEXT_WRAP_ON;
+    private int fitPolicy = Choice.TEXT_WRAP_ON;
 
-	private int type;
+    private int type;
 
-	public List(String title, int listType)
-	{
-		setTitle(title);
-		type = listType;
+    public List(String title, int listType) {
+        setTitle(title);
+        type = listType;
 
-		platformImage = new PlatformImage(width, height);
+        platformImage = new PlatformImage(width, height);
 
-		render();
-	}
+        render();
+    }
 
-	public List(String title, int listType, String[] stringElements, Image[] imageElements)
-	{
-		setTitle(title);
-		type = listType;
+    public List(String title, int listType, String[] stringElements, Image[] imageElements) {
+        setTitle(title);
+        type = listType;
 
-		for(int i=0; i<stringElements.length; i++)
-		{
-			if(imageElements!=null)
-			{
-				items.add(new ImageItem(stringElements[i], imageElements[i], 0, stringElements[i]));
-			}	
-			else
-			{
-				items.add(new StringItem(stringElements[i], stringElements[i]));
-			}
-		}
+        for (int i = 0; i < stringElements.length; i++) {
+            if (imageElements != null) {
+                items.add(new ImageItem(stringElements[i], imageElements[i], 0, stringElements[i]));
+            } else {
+                items.add(new StringItem(stringElements[i], stringElements[i]));
+            }
+        }
 
-		platformImage = new PlatformImage(width, height);
-		render();
-	}
+        platformImage = new PlatformImage(width, height);
+        render();
+    }
 
-	public int append(String stringPart, Image imagePart)
-	{ 
-			if(imagePart!=null)
-			{
-				items.add(new ImageItem(stringPart, imagePart, 0, stringPart));
-			}
-			else
-			{
-				items.add(new StringItem(stringPart, stringPart));
-			}
-			render();
-			return items.size()-1;
-	}
+    public int append(String stringPart, Image imagePart) {
+        if (imagePart != null) {
+            items.add(new ImageItem(stringPart, imagePart, 0, stringPart));
+        } else {
+            items.add(new StringItem(stringPart, stringPart));
+        }
+        render();
+        return items.size() - 1;
+    }
 
-	public void delete(int elementNum)
-	{
-		try
-		{
-			items.remove(elementNum);
-		}
-		catch (Exception e) { }
-		render();
-	}
+    public void delete(int elementNum) {
+        try {
+            items.remove(elementNum);
+        } catch (Exception e) {
+        }
+        render();
+    }
 
-	public void deleteAll() { items.clear(); render(); }
+    public void deleteAll() {
+        items.clear();
+        render();
+    }
 
-	public int getFitPolicy() { return fitPolicy; }
+    public int getFitPolicy() {
+        return fitPolicy;
+    }
 
-	public Font getFont(int elementNum) { return Font.getDefaultFont(); }
+    public Font getFont(int elementNum) {
+        return Font.getDefaultFont();
+    }
 
-	public Image getImage(int elementNum) { return ((ImageItem)(items.get(elementNum))).getImage(); }
-	
-	public int getSelectedFlags(boolean[] selectedArray_return) { return 0; }
+    public Image getImage(int elementNum) {
+        return ((ImageItem) (items.get(elementNum))).getImage();
+    }
 
-	public int getSelectedIndex() { return currentIndex; }
+    public int getSelectedFlags(boolean[] selectedArray_return) {
+        return 0;
+    }
 
-	public String getString(int elementNum) { return ((StringItem)(items.get(elementNum))).getString(); }
+    public int getSelectedIndex() {
+        return getCurrentIndex();
+    }
 
-	public void insert(int elementNum, String stringPart, Image imagePart)
-	{
-		if(elementNum<items.size() && elementNum>0)
-		{
-			try
-			{
-				if(imagePart!=null)
-				{
-					items.add(elementNum, new ImageItem(stringPart, imagePart, 0, stringPart));
-				}
-				else
-				{
-					items.add(elementNum, new StringItem(stringPart, stringPart));
-				}
-			}
-			catch(Exception e)
-			{
-				append(stringPart, imagePart);
-			} 
-		}
-		else
-		{
-			append(stringPart, imagePart);
-		}
-		render();
-	}
+    public String getString(int elementNum) {
+        return ((StringItem) (items.get(elementNum))).getString();
+    }
 
-	public boolean isSelected(int elementNum) { return elementNum== currentIndex; }
+    public void insert(int elementNum, String stringPart, Image imagePart) {
+        if (elementNum < items.size() && elementNum > 0) {
+            try {
+                if (imagePart != null) {
+                    items.add(elementNum, new ImageItem(stringPart, imagePart, 0, stringPart));
+                } else {
+                    items.add(elementNum, new StringItem(stringPart, stringPart));
+                }
+            } catch (Exception e) {
+                append(stringPart, imagePart);
+            }
+        } else {
+            append(stringPart, imagePart);
+        }
+        render();
+    }
 
-	// public void removeCommand(Command cmd) {  }
+    public boolean isSelected(int elementNum) {
+        return elementNum == getCurrentIndex();
+    }
 
-	public void set(int elementNum, String stringPart, Image imagePart)
-	{
-		if(imagePart!=null)
-		{
-			items.set(elementNum, new ImageItem(stringPart, imagePart, 0, stringPart));
-		}
-		else
-		{
-			items.set(elementNum, new StringItem(stringPart, stringPart));
-		}
-	}
-	
-	public void setFitPolicy(int fitpolicy) { fitPolicy = fitpolicy; }
+    // public void removeCommand(Command cmd) {  }
 
-	public void setFont(int elementNum, Font font) { }
-		
-	public void setSelectCommand(Command command) { SELECT_COMMAND = command; }
- 
-	public void setSelectedFlags(boolean[] selectedArray) { }
+    public void set(int elementNum, String stringPart, Image imagePart) {
+        if (imagePart != null) {
+            items.set(elementNum, new ImageItem(stringPart, imagePart, 0, stringPart));
+        } else {
+            items.set(elementNum, new StringItem(stringPart, stringPart));
+        }
+    }
 
-	public void setSelectedIndex(int elementNum, boolean selected)
-	{
-		if(selected == true)
-		{
-			currentIndex = elementNum;
-		}
-		else
-		{
-			currentIndex = 0;
-		}
-		render();
-	}
+    public void setFitPolicy(int fitpolicy) {
+        fitPolicy = fitpolicy;
+    }
 
-	//void setTicker(Ticker ticker)
-	
-	//void setTitle(String s)
+    public void setFont(int elementNum, Font font) {
+    }
 
-	public int size() { return items.size(); }
+    public void setSelectCommand(Command command) {
+        SELECT_COMMAND = command;
+    }
+
+    public void setSelectedFlags(boolean[] selectedArray) {
+    }
+
+    public void setSelectedIndex(int elementNum, boolean selected) {
+        if (selected == true) {
+            setCurrentIndex(elementNum);
+        } else {
+            setCurrentIndex(0);
+        }
+        render();
+    }
+
+    //void setTicker(Ticker ticker)
+
+    //void setTitle(String s)
+
+    public int size() {
+        return items.size();
+    }
 
 	/*
 		Draw list, handle input
 	*/
 
-	public void keyReleased(int key)
-	{
-		if(items.size()<1) { return; }
-		switch(key)
-		{
-			//case Mobile.KEY_NUM2: currentItem--; break;
-			//case Mobile.KEY_NUM8: currentItem++; break;
-			case Mobile.NOKIA_UP: currentIndex--; break;
-			case Mobile.NOKIA_DOWN: currentIndex++; break;
-			case Mobile.NOKIA_SOFT1: doLeftCommand(); break;
-			case Mobile.NOKIA_SOFT2: doRightCommand(); break;
-			case Mobile.NOKIA_SOFT3: doDefaultCommand(); break;
-			//case Mobile.KEY_NUM5: doDefaultCommand(); break;
-		}
-		if (currentIndex >=items.size()) { currentIndex =0; }
-		if (currentIndex <0) { currentIndex = items.size()-1; }
-		render();
-	}
+    public void keyReleased(int key) {
+        if (!oneKeyPressed) {
+            return;
+        }
+        super.keyReleased(key);
 
-	protected void doDefaultCommand()
-	{
-		if(commandlistener!=null)
-		{
-			commandlistener.commandAction(SELECT_COMMAND, this);
-		}
-	}
+        if (items.size() < 1) {
+            return;
+        }
+        Item item = getCurrentItem();
+        int curScreenTop = (int) (getScrollHeight() * getScollPos());
+        int curScreenBottom = curScreenTop + getMainAreaHeight();
+        int curItemTop = item == null ? curScreenTop : getItemTop(getCurrentIndex());
+        int curItemBottom = item == null ? curScreenTop : curItemTop + item.getHeight();
+        switch (key) {
+            case Mobile.NOKIA_UP:
+                if (curItemTop >= curScreenTop) {
+                    setCurrentIndex(getCurrentIndex() - 1);
+                }
+                break;
+            case Mobile.NOKIA_DOWN:
+                if (curItemBottom <= curScreenBottom) {
+                    setCurrentIndex(getCurrentIndex() + 1);
+                }
+                break;
+            case Mobile.NOKIA_SOFT1:
+                doLeftCommand();
+                break;
+            case Mobile.NOKIA_SOFT2:
+                doRightCommand();
+                break;
+            case Mobile.NOKIA_SOFT3:
+                doDefaultCommand();
+                break;
+            //case Mobile.KEY_NUM5: doDefaultCommand(); break;
+        }
+        render();
+    }
 
-	public void notifySetCurrent()
-	{
-		render();
-	}
+    public void pointerPressed(int x, int y) {
+        super.pointerPressed(x, y);
+
+        if (listCommands) {
+            return;
+        }
+
+        int itemIdx = getItemIndex(x, y);
+        if (itemIdx >= 0 && itemIdx < items.size()) {
+            if (getCurrentIndex() == itemIdx) {
+                items.get(getCurrentIndex()).pointerPressed(x, y);
+            }
+            render();
+        }
+
+    }
+
+    public void pointerReleased(int x, int y) {
+        if (!pointerPressed) {
+            return;
+        }
+        super.pointerReleased(x, y);
+
+        if (listCommands) {
+            int commandIdx = getCombinedCommandIndex(x, y);
+            if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
+                doCommand(commandIdx);
+            }
+            int hit = getCommandHit(x, y);
+            if (hit == 0) {
+                keyReleased(Mobile.NOKIA_SOFT1);
+            } else if (hit == 1) {
+                keyReleased(Mobile.NOKIA_SOFT2);
+            }
+            return;
+        }
+
+        if (y > TITLE_H && y < height - TITLE_H) {
+            int itemIdx = getItemIndex(x, y);
+            if (itemIdx >= 0 && itemIdx < items.size()) {
+                int oldIndex = getCurrentIndex();
+                setCurrentIndex(itemIdx);
+                Item item = items.get(getCurrentIndex());
+                if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
+                    item.pointerReleased(x, y);
+                    doDefaultCommand();
+                }
+            }
+        }
+        render();
+    }
+
+    protected void doDefaultCommand() {
+        if (commandlistener != null) {
+            commandlistener.commandAction(SELECT_COMMAND, this);
+        }
+    }
+
+    public void notifySetCurrent() {
+        render();
+    }
 }

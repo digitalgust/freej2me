@@ -17,50 +17,85 @@
 package javax.microedition.lcdui;
 
 
-public class ImageItem extends Item
-{
+import org.recompile.mobile.PlatformGraphics;
 
-	public static final int LAYOUT_CENTER = 3;
-	public static final int LAYOUT_DEFAULT = 0;
-	public static final int LAYOUT_LEFT = 1;
-	public static final int LAYOUT_NEWLINE_AFTER = 0x200;
-	public static final int LAYOUT_NEWLINE_BEFORE = 0x100;
-	public static final int LAYOUT_RIGHT = 2;
+import javax.microedition.lcdui.game.Sprite;
 
-	private Image image;
-	private String altText;
-	private int appearance;
-	private int layout;
+public class ImageItem extends Item {
 
-	public ImageItem(String label, Image img, int Layout, String alt)
-	{
-		setLabel(label);
-		layout = Layout;
-		image = img;
-		altText = alt;
-	}
+    public static final int LAYOUT_CENTER = 3;
+    public static final int LAYOUT_DEFAULT = 0;
+    public static final int LAYOUT_LEFT = 1;
+    public static final int LAYOUT_NEWLINE_AFTER = 0x200;
+    public static final int LAYOUT_NEWLINE_BEFORE = 0x100;
+    public static final int LAYOUT_RIGHT = 2;
 
-	public ImageItem(String label, Image img, int Layout, String alt, int appearanceMode)
-	{
-		setLabel(label);
-		layout = Layout;
-		image = img;
-		altText = alt;
-		appearance = appearanceMode;
-	}
+    private Image image;
+    private String altText;
+    private int appearance;
+    private int layout;
 
-	public String getAltText() { return altText; }
+    public ImageItem(String label, Image img, int Layout, String alt) {
+        setLabel(label);
+        layout = Layout;
+        image = img;
+        altText = alt;
+    }
 
-	public int getAppearanceMode() { return appearance; }
+    public ImageItem(String label, Image img, int Layout, String alt, int appearanceMode) {
+        setLabel(label);
+        layout = Layout;
+        image = img;
+        altText = alt;
+        appearance = appearanceMode;
+    }
 
-	public Image getImage() { return image; }
+    public String getAltText() {
+        return altText;
+    }
 
-	public int getLayout() { return layout; }
+    public int getAppearanceMode() {
+        return appearance;
+    }
 
-	public void setAltText(String text) { altText = text; }
+    public Image getImage() {
+        return image;
+    }
 
-	public void setImage(Image img) { image = img; }
+    public int getLayout() {
+        return layout;
+    }
 
-	public void setLayout(int Layout) { layout = Layout; }
+    public void setAltText(String text) {
+        altText = text;
+    }
 
+    public void setImage(Image img) {
+        image = img;
+    }
+
+    public void setLayout(int Layout) {
+        layout = Layout;
+    }
+
+    @Override
+    public int getPreferredHeight() {
+        int h = altText != null ? Displayable.ITEM_H : 0;
+        if (image != null) {
+            h += image.height;
+        }
+        return h;
+    }
+
+
+    @Override
+    protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
+        if (altText != null) {
+            gc.setColor(0xffffffff);
+            gc.drawString(getLabel(), x, y, Graphics.TOP | Graphics.LEFT);
+            y += Displayable.ITEM_H;
+        }
+        gc.drawImage(image, x, y, Graphics.TOP | Graphics.LEFT);
+        //gc.drawRegion(getImage(), 0, 0, w, h, Sprite.TRANS_NONE, x, y, Graphics.TOP | Graphics.LEFT);
+    }
 }
