@@ -392,7 +392,11 @@ public class FreeJ2ME extends J2meSandBox {
             y = (int) ((e.getX() - lcd.cx) * lcd.scalex);
         }
 
-        mobile.getPlatform().pointerPressed(x, y);
+        if (config.isRunning) {
+            config.mousePressed(x, y);
+        } else {
+            mobile.getPlatform().pointerPressed(x, y);
+        }
     }
 
     public void mouseReleased(MouseEvent e) {
@@ -405,7 +409,11 @@ public class FreeJ2ME extends J2meSandBox {
             y = (int) ((e.getX() - lcd.cx) * lcd.scalex);
         }
 
-        mobile.getPlatform().pointerReleased(x, y);
+        if (config.isRunning) {
+            config.mouseReleased(x, y);
+        } else {
+            mobile.getPlatform().pointerReleased(x, y);
+        }
         //lcd.repaint(); //gust 导致闪屏
     }
 
