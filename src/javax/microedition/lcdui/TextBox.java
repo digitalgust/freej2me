@@ -221,8 +221,6 @@ public class TextBox extends Screen {
         PlatformGraphics gc = platformImage.getGraphics();
         gc.setClip(0, 0, width, height);
         if (text == null || text.length() == 0) {
-            gc.setColor(0xffc0c0c0);
-            gc.drawString("press ENTER", 3, 30, Graphics.LEFT | Graphics.TOP);
         } else {
             gc.setColor(0xff000000);
             int y = 30;
@@ -232,6 +230,11 @@ public class TextBox extends Screen {
                 y += Displayable.ITEM_H;
             }
         }
+
+        gc.setARGBColor(0x80ffff00);
+        gc.fillRect(0, height - ITEM_H * 2, width, ITEM_H);
+        gc.setARGBColor(0xc0808080);
+        gc.drawString("press ENTER edit", width / 2, height - ITEM_H * 2, Graphics.HCENTER | Graphics.TOP);
         if (this.getDisplay().getCurrent() == this) {
             FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, 0, 0, width, height);
         }
