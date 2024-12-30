@@ -35,7 +35,8 @@ import javax.imageio.ImageIO;
 public class FreeJ2ME extends J2meSandBox {
     public static void main(String args[]) {
         FreeJ2ME app = new FreeJ2ME(args);
-//		FreeJ2ME app1 = new FreeJ2ME(args);
+        //可以启动多个实例
+//        FreeJ2ME app1 = new FreeJ2ME(args);
     }
 
     private Frame j2meframe;
@@ -68,19 +69,19 @@ public class FreeJ2ME extends J2meSandBox {
 
     String[] args;
 
-    final java.util.List<ComponentEvent> events = Collections.synchronizedList(new ArrayList<>());
+    final java.util.List<Runnable> proxyAwtEvents = Collections.synchronizedList(new ArrayList<>());
 
     boolean exit = false;
 
     public FreeJ2ME(String args[]) {
         this.args = args;
-        ThreadGroup tg = new ThreadGroup("threadgroup-" + this.toString());
+        ThreadGroup tg = new ThreadGroup("threadgroup-" + this);
         Thread t = new Thread(tg, () -> {//这个线程相当于是一个沙盒，和外部代码隔离，这样就可以同时运行多个freej2me实例
             openMidlet();
             System.out.println("midlet loaded");
 
             processEvent();
-        }, "thread-" + this.toString());
+        }, "thread-eventproxy-" + this);
         t.start();
     }
 
@@ -96,16 +97,18 @@ public class FreeJ2ME extends J2meSandBox {
 
         j2meframe.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                synchronized (events) {
-                    events.add(e);
-                    events.notify();
-                }
+                //交给沙盒线程处理
+                addEvent(() -> {
+                    mobile.getPlatform().loader.getMainMidlet().notifyDestroyed();
+                });
             }
 
             public void windowClosed(WindowEvent e) {
-                if (!System.getProperty("java.vendor", "").contains("minijvm")) {
-                    System.exit(0);
-                }
+                addEvent(() -> {
+                    if (!System.getProperty("java.vendor", "").contains("minijvm")) {
+                        System.exit(0);
+                    }
+                });
             }
         });
 
@@ -155,17 +158,15 @@ public class FreeJ2ME extends J2meSandBox {
 
         lcd.addKeyListener(new KeyListener() {
             public void keyPressed(KeyEvent e) {
-                synchronized (events) {
-                    events.add(e);
-                    events.notify();
-                }
+                addEvent(() -> {
+                    FreeJ2ME.this.keyPressed(e);
+                });
             }
 
             public void keyReleased(KeyEvent e) {
-                synchronized (events) {
-                    events.add(e);
-                    events.notify();
-                }
+                addEvent(() -> {
+                    FreeJ2ME.this.keyReleased(e);
+                });
             }
 
             public void keyTyped(KeyEvent e) {
@@ -175,17 +176,15 @@ public class FreeJ2ME extends J2meSandBox {
 
         lcd.addMouseListener(new MouseListener() {
             public void mousePressed(MouseEvent e) {
-                synchronized (events) {
-                    events.add(e);
-                    events.notify();
-                }
+                addEvent(() -> {
+                    FreeJ2ME.this.mousePressed(e);
+                });
             }
 
             public void mouseReleased(MouseEvent e) {
-                synchronized (events) {
-                    events.add(e);
-                    events.notify();
-                }
+                addEvent(() -> {
+                    FreeJ2ME.this.mouseReleased(e);
+                });
             }
 
             public void mouseExited(MouseEvent e) {
@@ -201,16 +200,17 @@ public class FreeJ2ME extends J2meSandBox {
 
         lcd.addMouseMotionListener(new MouseMotionAdapter() {
             public void mouseDragged(MouseEvent e) {
-                synchronized (events) {
-                    events.add(e);
-                    events.notify();
-                }
+                addEvent(() -> {
+                    FreeJ2ME.this.mouseDragged(e);
+                });
             }
         });
 
         j2meframe.addComponentListener(new ComponentAdapter() {
             public void componentResized(ComponentEvent e) {
-                resize();
+                addEvent(() -> {
+                    resize();
+                });
             }
         });
 
@@ -270,8 +270,15 @@ public class FreeJ2ME extends J2meSandBox {
 
 
     public void repaintRequest() {
-        synchronized (events) {
-            events.notify();
+        synchronized (proxyAwtEvents) {
+            proxyAwtEvents.notify();
+        }
+    }
+
+    public void addEvent(Runnable runnable) {
+        synchronized (proxyAwtEvents) {
+            proxyAwtEvents.add(runnable);
+            proxyAwtEvents.notify();
         }
     }
 
@@ -287,41 +294,18 @@ public class FreeJ2ME extends J2meSandBox {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if (events.isEmpty()) {
-                synchronized (events) {
+            if (proxyAwtEvents.isEmpty()) {
+                synchronized (proxyAwtEvents) {
                     try {
-                        events.wait(30);
+                        proxyAwtEvents.wait(30);
                     } catch (InterruptedException e) {
                         throw new RuntimeException(e);
                     }
                 }
             } else {
                 try {
-                    ComponentEvent e = events.remove(0);
-                    if (e instanceof KeyEvent) {
-                        if (e.getID() == KeyEvent.KEY_PRESSED) {
-                            keyPressed((KeyEvent) e);
-                        } else if (e.getID() == KeyEvent.KEY_RELEASED) {
-                            keyReleased((KeyEvent) e);
-                        }
-
-                    } else if (e instanceof MouseEvent) {
-                        if (e.getID() == MouseEvent.MOUSE_PRESSED) {
-                            mousePressed((MouseEvent) e);
-                        } else if (e.getID() == MouseEvent.MOUSE_RELEASED) {
-                            mouseReleased((MouseEvent) e);
-                        } else if (e.getID() == MouseEvent.MOUSE_DRAGGED) {
-                            mouseDragged((MouseEvent) e);
-                        }
-                    } else if (e instanceof WindowEvent) {
-                        if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-                            try {
-                                mobile.getPlatform().loader.getMainMidlet().notifyDestroyed();
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                        }
-                    }
+                    Runnable e = proxyAwtEvents.remove(0);
+                    e.run();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -439,17 +423,28 @@ public class FreeJ2ME extends J2meSandBox {
     }
 
     private void settingsChanged() {
-        int w = Integer.parseInt(config.settings.get("width"));
-        int h = Integer.parseInt(config.settings.get("height"));
+        int w = 240;
+        try {
+            w = Integer.parseInt(config.settings.get("width"));
+        } catch (Exception e) {
+        }
+        int h = 320;
+        try {
+            h = Integer.parseInt(config.settings.get("height"));
+        } catch (Exception e) {
+        }
 
-        limitFPS = Integer.parseInt(config.settings.get("fps"));
+        try {
+            limitFPS = Integer.parseInt(config.settings.get("fps"));
+        } catch (Exception e) {
+        }
         if (limitFPS > 0) {
             limitFPS = 1000 / limitFPS;
         }
 
         String sound = config.settings.get("sound");
         Mobile.sound = false;
-        if (sound.equals("on")) {
+        if ("on".equals(sound)) {
             Mobile.sound = true;
         }
 
@@ -460,24 +455,24 @@ public class FreeJ2ME extends J2meSandBox {
         Mobile.nokia = false;
         Mobile.siemens = false;
         Mobile.motorola = false;
-        if (phone.equals("Nokia")) {
+        if ("Nokia".equals(phone)) {
             Mobile.nokia = true;
             useNokiaControls = true;
         }
-        if (phone.equals("Siemens")) {
+        if ("Siemens".equals(phone)) {
             Mobile.siemens = true;
             useSiemensControls = true;
         }
-        if (phone.equals("Motorola")) {
+        if ("Motorola".equals(phone)) {
             Mobile.motorola = true;
             useMotorolaControls = true;
         }
 
         String rotate = config.settings.get("rotate");
-        if (rotate.equals("on")) {
+        if ("on".equals(rotate)) {
             rotateDisplay = true;
         }
-        if (rotate.equals("off")) {
+        if ("off".equals(rotate)) {
             rotateDisplay = false;
         }
 

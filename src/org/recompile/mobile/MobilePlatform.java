@@ -329,20 +329,28 @@ public class MobilePlatform {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            if (e.getSource() == okBtn) {
-                action();
-            } else if (e.getSource() == cancelBtn) {
-                closeWindow();
-            }
+            mobile.getJ2meSandBox().addEvent(new Runnable() {
+                @Override
+                public void run() {
+                    if (e.getSource() == okBtn) {
+                        action();
+                    } else if (e.getSource() == cancelBtn) {
+                        closeWindow();
+                    }
+                }
+            });
+
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_F1) {
-                action();
-            } else if (e.getKeyCode() == KeyEvent.VK_F2) {
-                closeWindow();
-            }
+            mobile.getJ2meSandBox().addEvent(() -> {
+                if (e.getKeyCode() == KeyEvent.VK_F1) {
+                    action();
+                } else if (e.getKeyCode() == KeyEvent.VK_F2) {
+                    closeWindow();
+                }
+            });
         }
     }
 
