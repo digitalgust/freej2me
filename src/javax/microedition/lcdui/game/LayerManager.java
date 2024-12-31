@@ -20,73 +20,84 @@ import java.util.ArrayList;
 
 import java.awt.Shape;
 
-import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.Graphics;
 
 import org.recompile.freej2me.FreeJ2ME;
-import org.recompile.mobile.Mobile;
-import org.recompile.mobile.PlatformGraphics;
 
 
-public class LayerManager
-{
+public class LayerManager {
 
-	protected ArrayList<Layer> layers;
+    protected ArrayList<Layer> layers;
 
-	protected Image canvas;
-	protected PlatformGraphics gc;
-	protected Shape clip;
+    //	protected Image canvas;
+//	protected PlatformGraphics gc;
+    protected Shape clip;
 
-	protected int x;
-	protected int y;
-	protected int width;
-	protected int height;
+    protected int viewX;
+    protected int viewY;
+    protected int viewWidth;
+    protected int viewHeight;
 
 
-	public LayerManager()
-	{
-		layers = new ArrayList<Layer>();
+    public LayerManager() {
+        layers = new ArrayList<Layer>();
 
-		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
-		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
+        viewWidth = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+        viewHeight = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 
-		canvas = Image.createImage(width, height);
-		gc = canvas.platformImage.getGraphics();
-	}
+//		canvas = Image.createImage(width, height);
+//		gc = canvas.platformImage.getGraphics();
+    }
 
-	public void append(Layer l) { layers.add(l); }
+    public void append(Layer l) {
+        layers.add(l);
+    }
 
-	public Layer getLayerAt(int index) { return layers.get(index); }
+    public Layer getLayerAt(int index) {
+        return layers.get(index);
+    }
 
-	public int getSize() { return layers.size(); }
+    public int getSize() {
+        return layers.size();
+    }
 
-	public void insert(Layer l, int index) { layers.add(index, l); }
+    public void insert(Layer l, int index) {
+        layers.add(index, l);
+    }
 
-	public void paint(Graphics g, int xdest, int ydest)
-	{
-		for(int i=0; i<layers.size(); i++)
-		{
-			drawLayer(g, xdest, ydest, layers.get(i));
-		}
-	}
+    public void paint(Graphics g, int x, int y) {
+        int clipX = g.getClipX();
+        int clipY = g.getClipY();
+        int clipW = g.getClipWidth();
+        int clipH =  g.getClipHeight();
 
-	private void drawLayer(Graphics g, int dx, int dy, Layer l)
-	{
-		if(l.isVisible())
-		{
-			l.render();
-			g.drawRegion(l.getLayerImage(), 0, 0, l.getLayerImage().getWidth(), l.getLayerImage().getHeight(), 0, dx+x+l.getX(), dy+y+l.getY(), Graphics.TOP|Graphics.LEFT);
-		}
-	}
 
-	public void remove(Layer l) { layers.remove(l); }
+        // translate the LayerManager co-ordinates to Screen co-ordinates
+        g.translate(x - viewX, y - viewY);
+        // set the clip to view window
+        g.clipRect(viewX, viewY, viewWidth, viewHeight);
 
-	public void setViewWindow(int wx, int wy, int wwidth, int wheight)
-	{
-		x = wx;
-		y = wy;
-		width = wwidth;
-		height = wheight;
-	}
+        // draw last to first
+        for (int i = layers.size() ; --i >= 0; ) {
+            Layer comp = layers.get(i);
+            if (comp.visible) {
+                comp.paint(g);
+            }
+        }
+        g.translate(-x + viewX, -y + viewY);
+        g.setClip(clipX, clipY, clipW, clipH);
+    }
+
+
+    public void remove(Layer l) {
+        layers.remove(l);
+    }
+
+    public void setViewWindow(int wx, int wy, int wwidth, int wheight) {
+        viewX = wx;
+        viewY = wy;
+        viewWidth = wwidth;
+        viewHeight = wheight;
+    }
 
 }

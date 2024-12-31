@@ -20,42 +20,61 @@ import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.Graphics;
 
 
-public abstract class Layer
-{
-	protected int x;
+public abstract class Layer {
+    protected int x;
 
-	protected int y;
-	
-	protected int height;
-	
-	protected int width;
+    protected int y;
+
+    protected int height;
+
+    protected int width;
 
 	protected Image image;
 
-	protected boolean visible;
+    protected boolean visible = true;
 
 
-	public int getHeight() { return height; }
+    public int getHeight() {
+        return height;
+    }
 
-	public int getWidth() { return width; }
+    public int getWidth() {
+        return width;
+    }
 
-	public int getX() { return x; }
+    public int getX() {
+        return x;
+    }
 
-	public int getY() { return y; }
+    public int getY() {
+        return y;
+    }
 
-	public boolean isVisible() { return visible; }
+    public boolean isVisible() {
+        return visible;
+    }
 
-	public void move(int dx, int dy) { x+=dx; y+=dy; }
+    public void move(int dx, int dy) {
+        x += dx;
+        y += dy;
+    }
 
-	public abstract void paint(Graphics g);
+    public abstract void paint(Graphics g);
 
-	public void setPosition(int nx, int ny) { x=nx; y=ny; }
+    public void setPosition(int nx, int ny) {
+        x = nx;
+        y = ny;
+    }
 
-	public void setVisible(boolean state) { visible = state; }
+    public void setVisible(boolean state) {
+        visible = state;
+    }
 
-	
-	public Image getLayerImage() { return image; }
 
-	public void render() { this.paint(image.platformImage.getGraphics()); }
+    public Image getLayerImage() {
+        return image;
+    }
+
+//	public void render() { this.paint(image.platformImage.getGraphics()); }
 
 }

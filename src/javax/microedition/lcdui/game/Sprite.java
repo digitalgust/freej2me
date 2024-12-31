@@ -69,7 +69,7 @@ public class Sprite	extends	Layer
 		//System.out.println("Sprite B"); // Found in use, Pacman Championship Edition
 		imgWidth = img.getWidth();
 		imgHeight = img.getHeight();
-		frameWidth = imgWidth; 
+		frameWidth = imgWidth;
 		frameHeight = imgHeight;
 		colCount = 1;
 		rowCount = 1;
@@ -95,7 +95,7 @@ public class Sprite	extends	Layer
 		System.out.println("Sprite D");
 		imgWidth = s.sprite.getWidth();
 		imgHeight = s.sprite.getHeight();
-		frameWidth = imgWidth; 
+		frameWidth = imgWidth;
 		frameHeight = imgHeight;
 		colCount = 1;
 		rowCount = 1;
@@ -176,7 +176,7 @@ public class Sprite	extends	Layer
 			int f = sequence.get(frame);
 			int r = frameHeight * (int)(f / colCount);
 			int c = frameWidth * (int)(f % colCount);
-			g.drawRegion(sprite, c, r, frameWidth, frameHeight, transform, x-refX, y-refY, 0);
+			g.drawRegion(sprite, c, r, frameWidth, frameHeight, transform, x-refX, y-refY, g.TOP|g.LEFT);
 		}
 		catch (Exception e)
 		{

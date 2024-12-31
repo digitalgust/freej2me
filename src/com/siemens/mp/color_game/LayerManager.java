@@ -20,12 +20,9 @@ package com.siemens.mp.color_game;
 
 import java.util.Vector;
 
-import javax.microedition.lcdui.Image;
 import javax.microedition.lcdui.Graphics;
 
 import org.recompile.freej2me.FreeJ2ME;
-import org.recompile.mobile.Mobile;
-import org.recompile.mobile.PlatformGraphics;
 
 public class LayerManager extends javax.microedition.lcdui.game.LayerManager
 {
@@ -35,28 +32,13 @@ public class LayerManager extends javax.microedition.lcdui.game.LayerManager
 	{
 		layers = new Vector<Layer>();
 
-		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
-		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
+		viewWidth = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+		viewHeight = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 
-		canvas = Image.createImage(width, height);
-		gc = canvas.platformImage.getGraphics();
+//		canvas = Image.createImage(width, height);
+//		gc = canvas.platformImage.getGraphics();
 	}
 
-	public void paint(Graphics g, int xdest, int ydest)
-	{
-		for(int i=0; i<layers.size(); i++)
-		{
-			drawLayer(g, xdest, ydest, layers.get(i));
-		}
-	}
-
-	private void drawLayer(Graphics g, int dx, int dy, Layer l)
-	{
-		if(l.isVisible())
-		{
-			g.drawRegion(l.getLayerImage(), 0, 0, l.getLayerImage().getWidth(), l.getLayerImage().getHeight(), 0, dx+x+l.getX(), dy+y+l.getY(), Graphics.TOP|Graphics.LEFT);
-		}
-	}
 
 	public void append(Layer l)
 	{
