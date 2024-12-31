@@ -16,13 +16,11 @@
 */
 package javax.microedition.lcdui.game;
 
-import javax.microedition.lcdui.Image;
+import org.recompile.freej2me.FreeJ2ME;
+import org.recompile.mobile.PlatformImage;
+
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Graphics;
-
-import org.recompile.freej2me.FreeJ2ME;
-import org.recompile.mobile.Mobile;
-import org.recompile.mobile.PlatformImage;
 
 public abstract class GameCanvas extends Canvas
 {
