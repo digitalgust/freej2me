@@ -236,13 +236,16 @@ public class MobilePlatform {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                frame.setVisible(false);
-                frame.dispose();
-                inputFrame = null;
+                mobile.getJ2meSandBox().addEvent(() -> {
+                    frame.setVisible(false);
+                    frame.dispose();
+                    inputFrame = null;
+                });
             }
         });
         String title = textBox == null ? textField.getLabel() : textBox.getTitle();
         frame.setTitle(title);
+        frame.setName("J2ME_INPUT_FRAME");
 
         Insets insets = frame.getInsets();
         int panW = frame.getWidth() - insets.left - insets.right;

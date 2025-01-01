@@ -99,7 +99,9 @@ public class FreeJ2ME extends J2meSandBox {
             public void windowClosing(WindowEvent e) {
                 //交给沙盒线程处理
                 addEvent(() -> {
-                    mobile.getPlatform().loader.getMainMidlet().notifyDestroyed();
+                    if (mobile.getPlatform().loader != null && mobile.getPlatform().loader.getMainMidlet() != null) {
+                        mobile.getPlatform().loader.getMainMidlet().notifyDestroyed();
+                    }
                 });
             }
 
