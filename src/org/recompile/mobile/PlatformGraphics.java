@@ -229,25 +229,60 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
      * @param processAlpha
      */
     public void drawRGB(int[] rgbData, int offset, int scanlength, int x, int y, int width, int height, boolean processAlpha) {
-        if (width < 1 || height < 1) {
+        if (rgbData == null || width < 1 || height < 1) {
             return;
         }
-        if (!processAlpha) {
-            for (int i = offset; i < rgbData.length; i++) {
-                rgbData[i] &= 0x00FFFFFF;
-                rgbData[i] |= 0xFF000000;
-            }
-        } else {    // Fix Alpha //
-            for (int i = offset; i < rgbData.length; i++) {
-                rgbData[i] |= 0x00000000;
-                rgbData[i] &= 0xFFFFFFFF;
+        int x2 = x + width;
+        int y2 = y + height;
+        int xOffset = 0, yOffset = 0;
+
+        if (x < 0) {
+            xOffset = -x;
+            x = 0;
+        }
+        if (x2 > canvas.getWidth()) {
+            width = canvas.getWidth() - x;
+            x2 = canvas.getWidth();
+        }
+        if (y < 0) {
+            yOffset = -y;
+            y = 0;
+        }
+        if (y2 > canvas.getHeight()) {
+            height = canvas.getHeight() - y;
+            y2 = canvas.getHeight();
+        }
+
+        if (x2 < 0 || x >= canvas.getWidth() || y2 < 0 || y >= canvas.getHeight()) {
+            return;
+        }
+//        if (!processAlpha) {
+//            for (int i = offset; i < rgbData.length; i++) {
+//                rgbData[i] &= 0x00FFFFFF;
+//                rgbData[i] |= 0xFF000000;
+//            }
+//        } else {    // Fix Alpha //
+//            for (int i = offset; i < rgbData.length; i++) {
+//                rgbData[i] |= 0x00000000;
+//                rgbData[i] &= 0xFFFFFFFF;
+//            }
+//        }
+        for (int dy = 0; dy < height; dy++) {
+            int curLineOffset = scanlength * (dy + yOffset) + offset;
+            for (int dx = 0; dx < width; dx++) {
+                int c = rgbData[curLineOffset + dx + xOffset];
+                if (processAlpha && (c & 0xff000000) == 0) {
+                    continue;
+                }
+                canvas.setRGB(x + dx, y + dy, c);
             }
         }
+
         // Copy from new image.  This avoids some problems with games that don't
         // properly adapt to different display sizes.
-        BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        temp.setRGB(0, 0, width, height, rgbData, offset, scanlength);
-        gc.drawImage(temp, x, y, null);
+//        BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+//        temp.setRGB(0, 0, width, height, rgbData, offset, scanlength);
+//        gc.drawImage(temp, x, y, null);
     }
 
 
