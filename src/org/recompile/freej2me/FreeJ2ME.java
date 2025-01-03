@@ -101,6 +101,7 @@ public class FreeJ2ME extends J2meSandBox {
                 addEvent(() -> {
                     if (mobile.getPlatform().loader != null && mobile.getPlatform().loader.getMainMidlet() != null) {
                         mobile.getPlatform().loader.getMainMidlet().notifyDestroyed();
+                        exit = true;
                     }
                 });
             }

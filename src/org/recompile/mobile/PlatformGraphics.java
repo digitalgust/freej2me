@@ -37,7 +37,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     public PlatformGraphics platformGraphics;
     public PlatformImage platformImage;
 
-    ThreadLocal<Rectangle> cliplv = ThreadLocal.withInitial(() -> new Rectangle());
+    static ThreadLocal<Rectangle> cliplv = ThreadLocal.withInitial(() -> new Rectangle());
 
     public PlatformGraphics(PlatformImage image) {
         canvas = image.getCanvas();
