@@ -234,14 +234,14 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         if (rgbData == null || width < 1 || height < 1) {
             return;
         }
-        int x2 = x + width;
-        int y2 = y + height;
         int xOffset = 0, yOffset = 0;
 
         if (x < 0) {
             xOffset = -x;
             x = 0;
+            width -= xOffset;
         }
+        int x2 = x + width;
         if (x2 > canvas.getWidth()) {
             width = canvas.getWidth() - x;
             x2 = canvas.getWidth();
@@ -249,7 +249,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         if (y < 0) {
             yOffset = -y;
             y = 0;
+            height -= yOffset;
         }
+        int y2 = y + height;
         if (y2 > canvas.getHeight()) {
             height = canvas.getHeight() - y;
             y2 = canvas.getHeight();
