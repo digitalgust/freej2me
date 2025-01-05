@@ -32,6 +32,7 @@ public class ChoiceGroup extends Item implements Choice {
     private ArrayList<String> strings = new ArrayList<String>();
 
     private ArrayList<Image> images = new ArrayList<Image>();
+    java.util.List<int[]> bounds = new ArrayList<int[]>();
 
     private int fitPolicy;
 
@@ -159,15 +160,16 @@ public class ChoiceGroup extends Item implements Choice {
 
     protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
         int color = gc.getColor();
-        if (label != null) {
+        if (label != null && label.length() > 0) {
             gc.drawString(label, x, y, Graphics.TOP | Graphics.LEFT);
+            y += Displayable.ITEM_H;
         }
-        y += Displayable.ITEM_H;
+        bounds.clear();
         for (int c = 0; c < size(); c++) {
             if (c == selectedIndex) {
                 gc.setColor(color);
             } else {
-                gc.setColor(0xff808080);
+                gc.setColor(0xff202020);
             }
             int cx = x;
             int boxw = Displayable.ITEM_H;
@@ -176,12 +178,21 @@ public class ChoiceGroup extends Item implements Choice {
             } else if (type == EXCLUSIVE) {
                 drawCircle(gc, cx, y + 2, boxw - 4, boxw - 4, selectedIndex == c);
             }
+            int[] bound = new int[]{cx, y, cx + w, y + Displayable.ITEM_H};
+            bounds.add(bound);
             cx = Displayable.ITEM_H;
             gc.drawString(getString(c), cx, y, Graphics.LEFT | Graphics.TOP);
             gc.setColor(color);
             y += Displayable.ITEM_H;
         }
-        gc.drawString("Press ENTER to change", x, y, Graphics.LEFT | Graphics.TOP);
+        String s = "";
+        if (type == MULTIPLE) {
+            s = "ENTER to change";
+        } else if (type == EXCLUSIVE) {
+            s = "LEFT/RIGHT/ENTER to change";
+        }
+        gc.setColor(0xff808080);
+        gc.drawString(s, x, y, Graphics.LEFT | Graphics.TOP);
     }
 
     void drawRect(PlatformGraphics gc, int x, int y, int w, int h, boolean selected) {
@@ -200,18 +211,35 @@ public class ChoiceGroup extends Item implements Choice {
         }
     }
 
-    public void keyPressed(int key) {
+    public boolean keyReleased(int key) {
         if (key == Mobile.NOKIA_LEFT) {
             selectedIndex--;
             if (selectedIndex < 0) {
                 selectedIndex = size() - 1;
             }
+            return true;
         } else if (key == Mobile.NOKIA_RIGHT) {
             selectedIndex++;
             if (selectedIndex >= size()) {
                 selectedIndex = 0;
             }
+            return true;
         }
+        return false;
+    }
+
+    protected boolean pointerReleased(int x, int y) {
+        if (type == EXCLUSIVE) {
+            for (int i = 0; i < bounds.size(); i++) {
+                int[] bound = bounds.get(i);
+                if (bound[0] <= x && x <= bound[2] && bound[1] <= y && y <= bound[3]) {
+                    selectedIndex = i;
+                    break;
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     protected void doActive() {
@@ -232,7 +260,7 @@ public class ChoiceGroup extends Item implements Choice {
     @Override
     public int getPreferredHeight() {
         int h = strings.size() * Displayable.ITEM_H + Displayable.ITEM_H + Displayable.ITEM_PAD;
-        if (label != null) {
+        if (label != null && label.length() > 0) {
             h += Displayable.ITEM_H;
         }
         return h;

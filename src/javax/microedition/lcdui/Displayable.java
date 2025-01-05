@@ -154,9 +154,10 @@ public abstract class Displayable {
                 return;
             }
 
+            boolean isProcessed = false;
             item = getCurrentItem();
             if (item != null) {
-                item.keyReleased(key);
+                isProcessed = item.keyReleased(key);
             }
             switch (key) {
                 case Mobile.NOKIA_UP:
@@ -172,13 +173,16 @@ public abstract class Displayable {
                     doRightCommand();
                     break;
                 case Mobile.NOKIA_SOFT3:
-                    doDefaultCommand();
+                    if (!isProcessed) {
+                        doDefaultCommand();
+                    }
                     break;
                 //case Mobile.KEY_NUM5: doDefaultCommand(); break;
 
             }
         }
         oneKeyPressed = false;
+        render();
     }
 
     public void keyRepeated(int key) {
@@ -219,6 +223,7 @@ public abstract class Displayable {
                 }
                 render();
             } else if (y > TITLE_H) {
+                //中央显示区域
                 if (!pointerDraged) {
                     if (listCommands) {//合并command展示屏的处理
                         int commandIdx = getCombinedCommandIndex(x, y);
@@ -232,14 +237,14 @@ public abstract class Displayable {
                             keyReleased(Mobile.NOKIA_SOFT2);
                         }
                     } else {
-                        if (y > TITLE_H && y < height - TITLE_H) {
-                            int itemIdx = getItemIndex(x, y);
-                            if (itemIdx >= 0 && itemIdx < items.size()) {
-                                int oldIndex = getCurrentIndex();
-                                setCurrentIndex(itemIdx);
-                                Item item = items.get(getCurrentIndex());
+                        int itemIdx = getItemIndex(x, y);
+                        if (itemIdx >= 0 && itemIdx < items.size()) {
+                            int oldIndex = getCurrentIndex();
+                            setCurrentIndex(itemIdx);
+                            Item item = items.get(getCurrentIndex());
+                            boolean isProcess = item.pointerReleased(x, y);
+                            if (!isProcess) {
                                 if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
-                                    item.pointerReleased(x, y);
                                     doDefaultCommand();
                                 }
                             }
@@ -249,6 +254,7 @@ public abstract class Displayable {
             }
         }
         pointerPressed = false;
+        render();
     }
 
     public void showNotify() {

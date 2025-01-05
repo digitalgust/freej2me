@@ -174,22 +174,28 @@ public abstract class Item {
     }
 
 
-    protected void keyPressed(int key) {
+    protected boolean keyPressed(int key) {
+        return false;
     }
 
-    protected void keyReleased(int key) {
+    protected boolean keyReleased(int key) {
+        return false;
     }
 
-    protected void keyRepeated(int key) {
+    protected boolean keyRepeated(int key) {
+        return false;
     }
 
-    protected void pointerDragged(int x, int y) {
+    protected boolean pointerDragged(int x, int y) {
+        return false;
     }
 
-    protected void pointerPressed(int x, int y) {
+    protected boolean pointerPressed(int x, int y) {
+        return false;
     }
 
-    protected void pointerReleased(int x, int y) {
+    protected boolean pointerReleased(int x, int y) {
+        return false;
     }
 
     /**
