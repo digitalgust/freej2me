@@ -106,13 +106,6 @@ public class FreeJ2ME extends J2meSandBox {
                 });
             }
 
-            public void windowClosed(WindowEvent e) {
-                addEvent(() -> {
-                    if (!System.getProperty("java.vendor", "").contains("minijvm")) {
-                        System.exit(0);
-                    }
-                });
-            }
         });
 
         // Setup Device //
@@ -313,6 +306,9 @@ public class FreeJ2ME extends J2meSandBox {
                     ex.printStackTrace();
                 }
             }
+        }
+        if (!System.getProperty("java.vendor", "").contains("minijvm")) {
+            System.exit(0);
         }
     }
 

@@ -255,6 +255,8 @@ public abstract class Canvas extends Displayable {
             e.printStackTrace();
         }
 
+//        System.out.println("countTimes=" + PlatformGraphics.countTimes);
+//        PlatformGraphics.countTimes = 0;
     }
 
     public void setFullScreenMode(boolean mode) {

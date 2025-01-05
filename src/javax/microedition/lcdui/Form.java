@@ -168,17 +168,16 @@ public class Form extends Screen {
     public void pointerPressed(int x, int y) {
 
         if (listCommands) {
-            return;
-        }
+        } else {
 
-        int itemIdx = getItemIndex(x, y);
-        if (itemIdx >= 0 && itemIdx < items.size()) {
-            if (getCurrentIndex() == itemIdx) {
-                items.get(getCurrentIndex()).pointerPressed(x, y);
+            int itemIdx = getItemIndex(x, y);
+            if (itemIdx >= 0 && itemIdx < items.size()) {
+                if (getCurrentIndex() == itemIdx) {
+                    items.get(getCurrentIndex()).pointerPressed(x, y);
+                }
+                render();
             }
-            render();
         }
-
         super.pointerPressed(x, y);
     }
 
@@ -198,18 +197,17 @@ public class Form extends Screen {
                 } else if (hit == 1) {
                     keyReleased(Mobile.NOKIA_SOFT2);
                 }
-                return;
-            }
-
-            if (y > TITLE_H && y < height - TITLE_H) {
-                int itemIdx = getItemIndex(x, y);
-                if (itemIdx >= 0 && itemIdx < items.size()) {
-                    int oldIndex = getCurrentIndex();
-                    setCurrentIndex(itemIdx);
-                    Item item = items.get(getCurrentIndex());
-                    if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
-                        item.pointerReleased(x, y);
-                        doDefaultCommand();
+            } else {
+                if (y > TITLE_H && y < height - TITLE_H) {
+                    int itemIdx = getItemIndex(x, y);
+                    if (itemIdx >= 0 && itemIdx < items.size()) {
+                        int oldIndex = getCurrentIndex();
+                        setCurrentIndex(itemIdx);
+                        Item item = items.get(getCurrentIndex());
+                        if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
+                            item.pointerReleased(x, y);
+                            doDefaultCommand();
+                        }
                     }
                 }
             }

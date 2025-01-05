@@ -175,6 +175,7 @@ public class ChoiceGroup extends Item implements Choice {
             gc.setColor(color);
             y += Displayable.ITEM_H;
         }
+        gc.drawString("Press ENTER to change", x, y, Graphics.LEFT | Graphics.TOP);
     }
 
     void drawRect(PlatformGraphics gc, int x, int y, int w, int h, boolean selected) {
@@ -224,6 +225,6 @@ public class ChoiceGroup extends Item implements Choice {
 
     @Override
     public int getPreferredHeight() {
-        return strings.size() * Displayable.ITEM_H;
+        return strings.size() * Displayable.ITEM_H + Displayable.ITEM_H + Displayable.ITEM_PAD;
     }
 }

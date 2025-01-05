@@ -126,7 +126,7 @@ public class TextField extends Item {
 
     @Override
     public int getPreferredHeight() {
-        return 2 * Displayable.ITEM_H;
+        return 2 * Displayable.ITEM_H + Displayable.ITEM_PAD;
     }
 
     @Override
@@ -136,14 +136,14 @@ public class TextField extends Item {
         y += Displayable.ITEM_H;
         gc.setARGBColor(0x80d0d0d0);
         int tfw = w - 2;
-        int tfh = h - Displayable.ITEM_H - 1;
+        int tfh = h - Displayable.ITEM_H - Displayable.ITEM_PAD;
         gc.fillRect(dx, y, tfw, tfh);
         gc.setARGBColor(0x80808080);
         gc.drawRect(dx, y, tfw, tfh);
-        int cx = gc.getClipX();
-        int cy = gc.getClipY();
-        int cw = gc.getClipWidth();
-        int ch = gc.getClipHeight();
+//        int cx = gc.getClipX();
+//        int cy = gc.getClipY();
+//        int cw = gc.getClipWidth();
+//        int ch = gc.getClipHeight();
 //        gc.setClip(dx + 1, y + 1, tfw - 2, tfh - 2);
         if (text == null || text.length() == 0) {
             gc.setColor(0xff808080);
@@ -154,5 +154,9 @@ public class TextField extends Item {
         }
 
 //        gc.setClip(cx, cy, cw, ch);
+    }
+
+    boolean needDoubleClick() {
+        return true;
     }
 }

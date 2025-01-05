@@ -29,6 +29,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     protected Graphics2D gc;
 
     protected Color awtColor;
+    public static int countTimes = 0;
 
     protected int strokeStyle = SOLID;
 
@@ -38,6 +39,7 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
     public PlatformImage platformImage;
 
     static ThreadLocal<Rectangle> cliplv = ThreadLocal.withInitial(() -> new Rectangle());
+    static ThreadLocal<int[][]> polygonPoints = ThreadLocal.withInitial(() -> new int[2][3]);
 
     public PlatformGraphics(PlatformImage image) {
         canvas = image.getCanvas();
@@ -256,17 +258,10 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
         if (x2 < 0 || x >= canvas.getWidth() || y2 < 0 || y >= canvas.getHeight()) {
             return;
         }
-//        if (!processAlpha) {
-//            for (int i = offset; i < rgbData.length; i++) {
-//                rgbData[i] &= 0x00FFFFFF;
-//                rgbData[i] |= 0xFF000000;
-//            }
-//        } else {    // Fix Alpha //
-//            for (int i = offset; i < rgbData.length; i++) {
-//                rgbData[i] |= 0x00000000;
-//                rgbData[i] &= 0xFFFFFFFF;
-//            }
-//        }
+
+//        canvas.setRGB(x, y, width, height, rgbData, offset, scanlength);
+
+
         for (int dy = 0; dy < height; dy++) {
             int curLineOffset = scanlength * (dy + yOffset) + offset;
             for (int dx = 0; dx < width; dx++) {
@@ -278,11 +273,6 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
             }
         }
 
-        // Copy from new image.  This avoids some problems with games that don't
-        // properly adapt to different display sizes.
-//        BufferedImage temp = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-//        temp.setRGB(0, 0, width, height, rgbData, offset, scanlength);
-//        gc.drawImage(temp, x, y, null);
     }
 
 
@@ -584,30 +574,47 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
     public void fillPolygon(int[] xPoints, int xOffset, int[] yPoints, int yOffset, int nPoints, int argbColor) {
         int temp = color;
-        int[] x = new int[nPoints];
-        int[] y = new int[nPoints];
+        int[][] points = polygonPoints.get();
+        if (points.length < nPoints) {
+            points = new int[2][nPoints];
+            polygonPoints.set(points);
+        }
+        System.arraycopy(xPoints, xOffset, points[0], 0, nPoints);
+        System.arraycopy(yPoints, yOffset, points[1], 0, nPoints);
 
         setAlphaRGB(argbColor);
 
-        for (int i = 0; i < nPoints; i++) {
-            x[i] = xPoints[xOffset + i];
-            y[i] = yPoints[yOffset + i];
-        }
-        gc.fillPolygon(x, y, nPoints);
+        gc.fillPolygon(points[0], points[1], nPoints);
         setColor(temp);
     }
 
     public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3) {
         //System.out.println("fillTriangle"); // Found In Use
-        gc.fillPolygon(new int[]{x1, x2, x3}, new int[]{y1, y2, y3}, 3);
+        int[][] trig = polygonPoints.get();
+        trig[0][0] = x1;
+        trig[0][1] = x2;
+        trig[0][2] = x3;
+        trig[1][0] = y1;
+        trig[1][1] = y2;
+        trig[1][2] = y3;
+        gc.fillPolygon(trig[0], trig[1], 3);
     }
 
     public void fillTriangle(int x1, int y1, int x2, int y2, int x3, int y3, int argbColor) {
         //System.out.println("fillTriangle"); // Found In Use
         int temp = color;
+        Color c = gc.getColor();
         setAlphaRGB(argbColor);
-        gc.fillPolygon(new int[]{x1, x2, x3}, new int[]{y1, y2, y3}, 3);
-        setColor(temp);
+        int[][] trig = polygonPoints.get();
+        trig[0][0] = x1;
+        trig[0][1] = x2;
+        trig[0][2] = x3;
+        trig[1][0] = y1;
+        trig[1][1] = y2;
+        trig[1][2] = y3;
+        gc.fillPolygon(trig[0], trig[1], 3);
+        gc.setColor(c);
+        color = temp;
     }
 
     public void getPixels(byte[] pixels, byte[] transparencyMask, int offset, int scanlength, int x, int y, int width, int height, int format) {

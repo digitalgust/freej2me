@@ -27,6 +27,7 @@ import org.recompile.mobile.PlatformGraphics;
 
 public abstract class Displayable {
     final static int ITEM_H = 18;
+    final static int ITEM_PAD = 5;
     final static int TITLE_H = 25;
 
     public PlatformImage platformImage;
@@ -234,25 +235,12 @@ public abstract class Displayable {
             gc.setClip(0, TITLE_H, width, ah);
 
 
-//            int max = (int) Math.floor(ah / ITEM_H); // max items per page
-//            if (items.size() < max) {
-//                max = items.size();
-//            }
-//
-//            int page = 0;
-//            page = (int) Math.floor(currentIndex / max); // current page
-//            int first = page * max; // first item to show
-//            int last = first + max - 1;
-//
-//            if (last >= items.size()) {
-//                last = items.size() - 1;
-//            }
-
             int y = (int) (25 - scrollPos * getScrollHeight());
             int i = 0;
             for (Item item : items) {
                 int itemH = item.getPreferredHeight();
                 if (getCurrentIndex() == i) {
+                    gc.setColor(0x226622);
                     gc.fillRect(0, y, width, itemH);
                     gc.setColor(0xFFFFFF);
                 } else {

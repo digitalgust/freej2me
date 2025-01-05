@@ -84,7 +84,7 @@ public class ImageItem extends Item {
         if (image != null) {
             h += image.height;
         }
-        return h;
+        return h + Displayable.ITEM_PAD;
     }
 
 

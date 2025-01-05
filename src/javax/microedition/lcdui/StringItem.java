@@ -74,7 +74,7 @@ public class StringItem extends Item {
 
     @Override
     public int getPreferredHeight() {
-        return subSections.size() * Displayable.ITEM_H;
+        return subSections.size() * Displayable.ITEM_H + Displayable.ITEM_PAD;
     }
 
 
