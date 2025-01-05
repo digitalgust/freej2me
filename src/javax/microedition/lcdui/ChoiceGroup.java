@@ -82,6 +82,8 @@ public class ChoiceGroup extends Item implements Choice {
     }
 
     public int append(String stringPart, Image imagePart) {
+        strings.add(stringPart);
+        images.add(imagePart);
         return strings.size();
     }
 
@@ -157,6 +159,10 @@ public class ChoiceGroup extends Item implements Choice {
 
     protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
         int color = gc.getColor();
+        if (label != null) {
+            gc.drawString(label, x, y, Graphics.TOP | Graphics.LEFT);
+        }
+        y += Displayable.ITEM_H;
         for (int c = 0; c < size(); c++) {
             if (c == selectedIndex) {
                 gc.setColor(color);
@@ -225,6 +231,10 @@ public class ChoiceGroup extends Item implements Choice {
 
     @Override
     public int getPreferredHeight() {
-        return strings.size() * Displayable.ITEM_H + Displayable.ITEM_H + Displayable.ITEM_PAD;
+        int h = strings.size() * Displayable.ITEM_H + Displayable.ITEM_H + Displayable.ITEM_PAD;
+        if (label != null) {
+            h += Displayable.ITEM_H;
+        }
+        return h;
     }
 }

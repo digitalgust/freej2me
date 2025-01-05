@@ -148,6 +148,35 @@ public abstract class Displayable {
                     }
                     break;
             }
+
+            if (listCommands) {
+                keyPressedCommands(key);
+                return;
+            }
+
+            item = getCurrentItem();
+            if (item != null) {
+                item.keyReleased(key);
+            }
+            switch (key) {
+                case Mobile.NOKIA_UP:
+                    setCurrentIndex(getCurrentIndex() - 1);
+                    break;
+                case Mobile.NOKIA_DOWN:
+                    setCurrentIndex(getCurrentIndex() + 1);
+                    break;
+                case Mobile.NOKIA_SOFT1:
+                    doLeftCommand();
+                    break;
+                case Mobile.NOKIA_SOFT2:
+                    doRightCommand();
+                    break;
+                case Mobile.NOKIA_SOFT3:
+                    doDefaultCommand();
+                    break;
+                //case Mobile.KEY_NUM5: doDefaultCommand(); break;
+
+            }
         }
         oneKeyPressed = false;
     }
@@ -189,6 +218,34 @@ public abstract class Displayable {
                     keyReleased(Mobile.NOKIA_SOFT2);
                 }
                 render();
+            } else if (y > TITLE_H) {
+                if (!pointerDraged) {
+                    if (listCommands) {//合并command展示屏的处理
+                        int commandIdx = getCombinedCommandIndex(x, y);
+                        if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
+                            doCommand(commandIdx);
+                        }
+                        int hit = getCommandHit(x, y);
+                        if (hit == 0) {
+                            keyReleased(Mobile.NOKIA_SOFT1);
+                        } else if (hit == 1) {
+                            keyReleased(Mobile.NOKIA_SOFT2);
+                        }
+                    } else {
+                        if (y > TITLE_H && y < height - TITLE_H) {
+                            int itemIdx = getItemIndex(x, y);
+                            if (itemIdx >= 0 && itemIdx < items.size()) {
+                                int oldIndex = getCurrentIndex();
+                                setCurrentIndex(itemIdx);
+                                Item item = items.get(getCurrentIndex());
+                                if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
+                                    item.pointerReleased(x, y);
+                                    doDefaultCommand();
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
         pointerPressed = false;
