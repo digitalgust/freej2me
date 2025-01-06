@@ -21,6 +21,8 @@ import org.recompile.mobile.PlatformGraphics;
 
 import javax.microedition.lcdui.game.Sprite;
 
+import static javax.microedition.lcdui.Displayable.ITEM_PAD;
+
 public class ImageItem extends Item {
 
     public static final int LAYOUT_CENTER = 3;
@@ -80,22 +82,27 @@ public class ImageItem extends Item {
 
     @Override
     public int getPreferredHeight() {
-        int h = altText != null ? Displayable.ITEM_H : 0;
+        int h = 0;
+//        h += altText != null ? Displayable.ITEM_H : 0;
         if (image != null) {
             h += image.height;
         }
-        return h + Displayable.ITEM_PAD;
+        return h + ITEM_PAD;
     }
 
 
     @Override
     protected void render(PlatformGraphics gc, int x, int y, int w, int h) {
+        if (image != null) {
+            gc.drawImage(image, x, y + 3, Graphics.TOP | Graphics.LEFT);
+//            y += image.height;
+            x += image.width + ITEM_PAD;
+        }
         if (altText != null) {
-            gc.setColor(0xffffffff);
+            //gc.setColor(0xff000000);
             gc.drawString(getLabel(), x, y, Graphics.TOP | Graphics.LEFT);
             y += Displayable.ITEM_H;
         }
-        gc.drawImage(image, x, y, Graphics.TOP | Graphics.LEFT);
         //gc.drawRegion(getImage(), 0, 0, w, h, Sprite.TRANS_NONE, x, y, Graphics.TOP | Graphics.LEFT);
     }
 }

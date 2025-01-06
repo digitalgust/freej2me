@@ -162,4 +162,12 @@ public class Mobile {
             j2meSandBox.notifyDestroy();
         }
     }
+
+    public int getLcdWidth() {
+        return platform.lcdWidth;
+    }
+
+    public int getLcdHeight() {
+        return platform.lcdHeight;
+    }
 }

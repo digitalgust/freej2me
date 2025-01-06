@@ -27,7 +27,7 @@ import org.recompile.mobile.PlatformGraphics;
 
 public abstract class Displayable {
     final static int ITEM_H = 18;
-    final static int ITEM_PAD = 5;
+    final static int ITEM_PAD = 6;
     final static int TITLE_H = 25;
 
     public PlatformImage platformImage;
@@ -224,29 +224,27 @@ public abstract class Displayable {
                 render();
             } else if (y > TITLE_H) {
                 //中央显示区域
-                if (!pointerDraged) {
-                    if (listCommands) {//合并command展示屏的处理
-                        int commandIdx = getCombinedCommandIndex(x, y);
-                        if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
-                            doCommand(commandIdx);
-                        }
-                        int hit = getCommandHit(x, y);
-                        if (hit == 0) {
-                            keyReleased(Mobile.NOKIA_SOFT1);
-                        } else if (hit == 1) {
-                            keyReleased(Mobile.NOKIA_SOFT2);
-                        }
-                    } else {
-                        int itemIdx = getItemIndex(x, y);
-                        if (itemIdx >= 0 && itemIdx < items.size()) {
-                            int oldIndex = getCurrentIndex();
-                            setCurrentIndex(itemIdx);
-                            Item item = items.get(getCurrentIndex());
-                            boolean isProcess = item.pointerReleased(x, y);
-                            if (!isProcess) {
-                                if (oldIndex == getCurrentIndex() || !item.needDoubleClick()) {
-                                    doDefaultCommand();
-                                }
+                if (listCommands) {//合并command展示屏的处理
+                    int commandIdx = getCombinedCommandIndex(x, y);
+                    if (commandIdx >= 0 && commandIdx < combinedCommands.size()) {
+                        doCommand(commandIdx);
+                    }
+                    int hit = getCommandHit(x, y);
+                    if (hit == 0) {
+                        keyReleased(Mobile.NOKIA_SOFT1);
+                    } else if (hit == 1) {
+                        keyReleased(Mobile.NOKIA_SOFT2);
+                    }
+                } else {
+                    int oldIndex = getCurrentIndex();
+                    int itemIdx = getItemIndex(x, y);
+                    if (itemIdx >= 0 && itemIdx < items.size()) {
+                        setCurrentIndex(itemIdx);
+                        Item item = items.get(getCurrentIndex());
+                        boolean isProcess = item.pointerReleased(x, y);
+                        if (!isProcess) {
+                            if (oldIndex == itemIdx) {
+                                doDefaultCommand();
                             }
                         }
                     }
@@ -294,6 +292,10 @@ public abstract class Displayable {
             }
             // Draw list items //
             int ah = height - TITLE_H * 2; // allowed height
+//            int totalH = getTotalHeight();
+//            if (ah > totalH) {
+//                scrollPos = 1.0f;
+//            }
 
             gc.setClip(0, TITLE_H, width, ah);
 

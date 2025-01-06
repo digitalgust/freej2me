@@ -48,7 +48,7 @@ public class Alert extends Screen {
     public Alert(String title) {
         System.out.println("Alert: " + title);
         setTitle(title);
-        Thread.dumpStack();
+        //Thread.dumpStack();
         platformImage = new PlatformImage(width, height);
     }
 

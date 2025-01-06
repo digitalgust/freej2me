@@ -32,6 +32,8 @@ public class RecordStore
 
 	public static final int AUTHMODE_ANY = 1;
 	public static final int AUTHMODE_PRIVATE = 0;
+    public static final int MAX_RECORD_SIZE_IN_BYTES = 4096 * 1024;
+    public static final int MAX_RECORD_COUNT = 1024;
 
 
 	private String name;
@@ -197,6 +199,9 @@ public class RecordStore
 
 	public int addRecord(byte[] data, int offset, int numBytes) throws RecordStoreException
 	{
+		if (nextid >= MAX_RECORD_COUNT) {
+			throw (new RecordStoreFullException("Record Store Full"));
+		}
 		//System.out.println("> Add Record "+nextid+ " to "+name);
 		try
 		{
@@ -207,7 +212,7 @@ public class RecordStore
 			nextid++;
 			version++;
 
-			save();
+            save();
 
 			for(int i=0; i<listeners.size(); i++)
 			{
@@ -294,7 +299,7 @@ public class RecordStore
 		if(recordId >= records.size())
 		{
 			//System.out.println("getRecord Invalid RecordId "+recordId);
-			throw(new InvalidRecordIDException("(A) Invalid Record ID: "+recordId));
+	throw(new InvalidRecordIDException("(A) Invalid Record ID: "+recordId));
 		}
 		try
 		{
@@ -337,9 +342,9 @@ public class RecordStore
 		return getRecord(recordId).length;
 	}
 
-	public int getSize() { return 32767; }
+	public int getSize() { return MAX_RECORD_SIZE_IN_BYTES; }
 
-	public int getSizeAvailable() { return 65536; }
+	public int getSizeAvailable() { return MAX_RECORD_SIZE_IN_BYTES; }
 
 	public int getVersion() { return version; }
 

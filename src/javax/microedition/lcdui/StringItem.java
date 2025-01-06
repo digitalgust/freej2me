@@ -34,7 +34,7 @@ public class StringItem extends Item {
         setLabel(label);
         text = textvalue;
         font = Font.getDefaultFont();
-        int screenW = FreeJ2ME.getMobile().getDisplay().getCurrent().getWidth();
+        int screenW = FreeJ2ME.getMobile().getLcdWidth();
         subSections = Displayable.getSubSection(text, font, screenW, null);
     }
 
@@ -43,7 +43,7 @@ public class StringItem extends Item {
         text = textvalue;
         appearance = appearanceMode;
         font = Font.getDefaultFont();
-        int screenW = FreeJ2ME.getMobile().getDisplay().getCurrent().getWidth();
+        int screenW = FreeJ2ME.getMobile().getLcdWidth();
         subSections = Displayable.getSubSection(text, font, screenW, null);
     }
 

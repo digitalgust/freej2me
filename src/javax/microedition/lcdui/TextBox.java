@@ -179,6 +179,9 @@ public class TextBox extends Screen {
     }
 
     public void pointerReleased(int x, int y) {
+        if (!pointerPressed) {
+            return;
+        }
         super.pointerReleased(x, y);
         //
 

@@ -292,6 +292,9 @@ public class PlatformGraphics extends javax.microedition.lcdui.Graphics implemen
 
     public void drawString(String str, int x, int y, int anchor) {
         if (str != null) {
+            if (anchor == 0) {
+                anchor = javax.microedition.lcdui.Graphics.TOP | javax.microedition.lcdui.Graphics.LEFT;
+            }
             x = AnchorX(x, gc.getFontMetrics().stringWidth(str), anchor);
             y = y + gc.getFontMetrics().getAscent() - 1;
             y = AnchorY(y, gc.getFontMetrics().getHeight(), anchor);
