@@ -59,7 +59,7 @@ public class FileSystemRegistryImpl implements FileSystemRegistryDelegate {
 
             @Override
             public Object nextElement() {
-                return roots[index++];
+                return roots[index++].toString();
             }
         };
     }
