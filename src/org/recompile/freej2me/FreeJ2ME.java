@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import javax.microedition.lcdui.Display;
 
 public class FreeJ2ME extends J2meSandBox {
     public static void main(String args[]) {
@@ -59,7 +60,10 @@ public class FreeJ2ME extends J2meSandBox {
     private int limitFPS = 0;
     Mobile mobile;
 
-    private boolean[] pressedKeys = new boolean[128];
+    static final int MAX_KEYS = 128;
+    long[] repeatTime = new long[MAX_KEYS];
+
+    private boolean[] pressedKeys = new boolean[MAX_KEYS];
 
     /**
      * 通过线程组来获取Mobile对象，这样可以同时运行多个freej2me实例
@@ -284,8 +288,9 @@ public class FreeJ2ME extends J2meSandBox {
     void processEvent() {
         while (!exit) {
             try {
-                if (getMobile().getDisplay() != null && getMobile().getDisplay().getCurrent() instanceof javax.microedition.lcdui.Canvas) {
-                    ((javax.microedition.lcdui.Canvas) getMobile().getDisplay().getCurrent()).serviceRepaints();
+                Display display = getMobile().getDisplay();
+                if (display != null && display.getCurrent() instanceof javax.microedition.lcdui.Canvas) {
+                    ((javax.microedition.lcdui.Canvas) display.getCurrent()).serviceRepaints();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -302,6 +307,7 @@ public class FreeJ2ME extends J2meSandBox {
                 try {
                     Runnable e = proxyAwtEvents.remove(0);
                     e.run();
+                    genKeyRepeat();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -309,6 +315,28 @@ public class FreeJ2ME extends J2meSandBox {
         }
         if (!System.getProperty("java.vendor", "").contains("minijvm")) {
             System.exit(0);
+        }
+    }
+
+    /*
+     * Generate key repeats for keys that are held down.
+     * this is for android and ios
+     */
+    private void genKeyRepeat() {
+        for (int i = 0; i < pressedKeys.length; i++) {
+            int mobikey = i - 64;
+
+            if (config.isRunning) {
+            } else {
+                if (pressedKeys[i]) {
+                    long curt = System.currentTimeMillis();
+                    if (curt - repeatTime[i] > 100) {
+                        repeatTime[i] = curt;
+                        mobile.getPlatform().keyRepeated(mobikey);
+                        //System.out.println("keyRepeated:  " + Integer.toString(mobikey));
+                    }
+                }
+            }
         }
     }
 
@@ -345,6 +373,8 @@ public class FreeJ2ME extends J2meSandBox {
             return;
         }
 
+        repeatTime[mobikeyN] = System.currentTimeMillis();
+        //System.out.println("keyPressed:  " + Integer.toString(mobikey));
         if (config.isRunning) {
             config.keyPressed(mobikey);
         } else {
@@ -370,7 +400,8 @@ public class FreeJ2ME extends J2meSandBox {
         }
 
         pressedKeys[mobikeyN] = false;
-
+        repeatTime[mobikeyN] = 0;
+        //System.out.println("keyReleased:  " + Integer.toString(mobikey));
         if (config.isRunning) {
             config.keyReleased(mobikey);
         } else {

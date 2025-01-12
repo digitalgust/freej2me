@@ -46,10 +46,7 @@ public class Alert extends Screen {
 
 
     public Alert(String title) {
-        System.out.println("Alert: " + title);
-        setTitle(title);
-        //Thread.dumpStack();
-        platformImage = new PlatformImage(width, height);
+        this(title, null, null, null);
     }
 
     public Alert(String title, String alertText, Image alertImage, AlertType alertType) {
@@ -138,9 +135,13 @@ public class Alert extends Screen {
 
     public CommandListener defaultListener = new CommandListener() {
         public void commandAction(Command cmd, Displayable next) {
-            FreeJ2ME.getMobile().getDisplay().setCurrent(next);
+            FreeJ2ME.getMobile().getDisplay().setCurrent(nextScreen);
         }
     };
+
+    public void showNotify() {
+        nextScreen = FreeJ2ME.getMobile().getDisplay().getCurrent();
+    }
 
     public void setNextScreen(Displayable next) {
         nextScreen = next;

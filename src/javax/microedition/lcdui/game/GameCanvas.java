@@ -22,51 +22,48 @@ import org.recompile.mobile.PlatformImage;
 import javax.microedition.lcdui.Canvas;
 import javax.microedition.lcdui.Graphics;
 
-public abstract class GameCanvas extends Canvas
-{
-	public static final int UP_PRESSED = 1 << Canvas.UP;
-	public static final int DOWN_PRESSED = 1 << Canvas.DOWN;
-	public static final int LEFT_PRESSED = 1 << Canvas.LEFT;
-	public static final int RIGHT_PRESSED = 1 << Canvas.RIGHT;
-	public static final int FIRE_PRESSED = 1 << Canvas.FIRE;
-	public static final int GAME_A_PRESSED = 1 << Canvas.GAME_A;
-	public static final int GAME_B_PRESSED = 1 << Canvas.GAME_B;
-	public static final int GAME_C_PRESSED = 1 << Canvas.GAME_C;
-	public static final int GAME_D_PRESSED = 1 << Canvas.GAME_D;
+public abstract class GameCanvas extends Canvas {
+    public static final int UP_PRESSED = 1 << Canvas.UP;
+    public static final int DOWN_PRESSED = 1 << Canvas.DOWN;
+    public static final int LEFT_PRESSED = 1 << Canvas.LEFT;
+    public static final int RIGHT_PRESSED = 1 << Canvas.RIGHT;
+    public static final int FIRE_PRESSED = 1 << Canvas.FIRE;
+    public static final int GAME_A_PRESSED = 1 << Canvas.GAME_A;
+    public static final int GAME_B_PRESSED = 1 << Canvas.GAME_B;
+    public static final int GAME_C_PRESSED = 1 << Canvas.GAME_C;
+    public static final int GAME_D_PRESSED = 1 << Canvas.GAME_D;
 
-	private boolean suppressKeyEvents;
+    private boolean suppressKeyEvents;
 
-	protected GameCanvas(boolean suppressKeyEvents)
-	{
-		this.suppressKeyEvents = suppressKeyEvents;
+    protected GameCanvas(boolean suppressKeyEvents) {
+        this.suppressKeyEvents = suppressKeyEvents;
 
-		width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
-		height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
+        width = FreeJ2ME.getMobile().getPlatform().lcdWidth;
+        height = FreeJ2ME.getMobile().getPlatform().lcdHeight;
 
-		platformImage = new PlatformImage(width, height);
-	}
+        platformImage = new PlatformImage(width, height);
+    }
 
-	protected Graphics getGraphics()
-	{
-		return platformImage.getGraphics();
-	}
+    protected Graphics getGraphics() {
+        return platformImage.getGraphics();
+    }
 
-	public void paint(Graphics g) { }
+    public void paint(Graphics g) {
+    }
 
-	public void flushGraphics(int x, int y, int width, int height)
-	{
-		FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, x, y, width, height);
-	}
+    public void flushGraphics(int x, int y, int width, int height) {
+        FreeJ2ME.getMobile().getPlatform().flushGraphics(platformImage, x, y, width, height);
+    }
 
-	public void flushGraphics()
-	{
-		flushGraphics(0, 0, width, height);
-	}
+    public void flushGraphics() {
+        flushGraphics(0, 0, width, height);
+    }
 
-	public int getKeyStates() // found in use
-	{
-		int t = FreeJ2ME.getMobile().getPlatform().keyState;
-		FreeJ2ME.getMobile().getPlatform().keyState = 0;
-		return t;
-	}
+    public int getKeyStates() // found in use
+    {
+        int t = FreeJ2ME.getMobile().getPlatform().keyState;
+//        System.out.println("getKeyStates = " + t);
+        //FreeJ2ME.getMobile().getPlatform().keyState = 0;
+        return t;
+    }
 }
